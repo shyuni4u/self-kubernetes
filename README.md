@@ -3,14 +3,16 @@
 ## SWAP 비활성화
 
 1. swap 활성화 확인
-   > 출력이 비어있으면 스왑 공간이 비활성화되어있는 상태
+
+> 출력이 비어있으면 스왑 공간이 비활성화되어있는 상태
 
 ```
 sudo swapon --show
 ```
 
 2. swap 파일이 있을 경우, swap 기능 비활성화.
-   > swap 파일이 있을 경우 *kubernetes*가 작동하지 않으며 따로 설정으로 해결해야함
+
+> swap 파일이 있을 경우 *kubernetes*가 작동하지 않으며 따로 설정으로 해결해야함
 
 ```
 sudo swapoff -a
@@ -26,7 +28,7 @@ sudo nano /etc/fstab
 
 1. root login
 
-> root 권한 없이 해봤는데 *kubeadm*에서 에러가 발생함.
+> root 권한 없이 할 경우 *kubeadm*에서 에러가 발생함.
 
 ```
 sudo -i
@@ -85,9 +87,7 @@ systemctl daemon-reload
 systemctl restart docker
 ```
 
-## Install kubeadm/kubelet/kubectl
-
-**[공식 사이트](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl)**
+## Install kubeadm/kubelet/kubectl **[Manual](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl)**
 
 ```
 sudo apt-get update && sudo apt-get install -y apt-transport-https curl
@@ -102,11 +102,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 ## Kubernetes 클러스터 생성
 
-1. Set network addon
-
-**[설명서1](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)**
-
-**[설명서2](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)**
+1. Set network addon **[Manual1](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)**, **[Manual2](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)**
 
 ```
 kubeadm init --pod-network-cidr=10.244.0.0/16
@@ -183,15 +179,13 @@ kube-system   kube-scheduler-kube            1/1     Running   0          7m8s
 
 ## 단일 노드 클러스터이기 때문에 이 노드에 일반 POD도 띄울 수 있게 다음 명령어를 입력한다.
 
-1. [taint란?](https://kubernetes.io/ko/docs/concepts/scheduling-eviction/taint-and-toleration/)
+1. taint [taint란?](https://kubernetes.io/ko/docs/concepts/scheduling-eviction/taint-and-toleration/)
 
 ```
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
-## Install Ingress
-
-**[설치방법](https://kubernetes.github.io/ingress-nginx/deploy/)**
+## Install Ingress **[Manual](https://kubernetes.github.io/ingress-nginx/deploy/)**
 
 1. kubectl apply
 
@@ -213,9 +207,7 @@ ingress-nginx   ingress-nginx-controller   0/1     1            0           52s
 kube-system     coredns                    2/2     2            2           34m
 ```
 
-3. 내용 확인 후 Deployment 수정
-
-**[옵션 수정](https://kubernetes.github.io/ingress-nginx/deploy/baremetal/#via-the-host-network)**
+3. 내용 확인 후 Deployment 수정 **[Manual](https://kubernetes.github.io/ingress-nginx/deploy/baremetal/#via-the-host-network)**
 
 ```
 kubectl edit deploy/ingress-nginx-controller -n ingress-nginx
@@ -237,7 +229,7 @@ ingress-nginx-controller-785557f9c9-bxs6h   1/1     Terminating   0          5h5
 ingress-nginx-controller-96588fb84-jcn9j    1/1     Running       0          14s     10.0.2.4     kube   <none>           <none>
 ```
 
-## [Dashboard 설치](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui)
+## Dashboard 설치 [Manual](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui)
 
 1. kubectl apply
 
@@ -245,7 +237,7 @@ ingress-nginx-controller-96588fb84-jcn9j    1/1     Running       0          14s
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
 ```
 
-2. **[Create Sample User for Dashboard](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)**
+2. Create Sample User for Dashboard [Manual](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)
 
 3. Creating a Service Account
 
