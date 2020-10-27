@@ -1,6 +1,6 @@
 # kubeadm으로 단일 노드 Kubernetes 클러스터 만들기
 
-**[참고](https://medium.com/@essem_dev/kubeadm%EC%9C%BC%EB%A1%9C-%EB%8B%A8%EC%9D%BC-%EB%85%B8%EB%93%9C-kubernetes-%ED%81%B4%EB%9F%AC%EC%8A%A4%ED%84%B0-%EB%A7%8C%EB%93%A4%EA%B8%B0-b3428ac6dbda)**
+**[참고 블로그](https://medium.com/@essem_dev/kubeadm%EC%9C%BC%EB%A1%9C-%EB%8B%A8%EC%9D%BC-%EB%85%B8%EB%93%9C-kubernetes-%ED%81%B4%EB%9F%AC%EC%8A%A4%ED%84%B0-%EB%A7%8C%EB%93%A4%EA%B8%B0-b3428ac6dbda)**
 
 ## SWAP 비활성화
 
@@ -14,7 +14,7 @@ sudo swapon --show
 
 2. swap 파일이 있을 경우, swap 기능 비활성화
 
-> swap 파일이 있을 경우 **kubernetes**가 작동하지 않으며 따로 설정으로 해결해야함
+swap 파일이 있을 경우 *kubernetes*가 작동하지 않으며 따로 설정으로 해결해야함
 
 ```
 sudo swapoff -a
@@ -106,7 +106,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 ## Kubernetes 클러스터 생성
 
-### Set network addon
+1. Set network addon
 
 **[설명서1](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)**
 
@@ -132,32 +132,46 @@ kubeadm join 10.0.2.15:6443 --token idofk0.80y0borfhelr8ch1 \
     --discovery-token-ca-cert-hash sha256:20eec08f0524de9827f3404a06c03160e8fb1d96fa5528f59ce7f6ed39ba3e43
 ```
 
-#### 실패유형
+###### 실패유형
 
+<p>
 1. swapoff가 아닌 경우
 2. sudo 권한이 아닐 경우
+</p>
 
-## Logout root & Login <user>
+2. Logout root & Login <user>
 
-> exit
+```
+exit
+```
 
-## Do guide line
+3. Do guide line
 
-> mkdir -p $HOME/.kube
-> sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-> sudo chown $(id -u):$(id -g) \$HOME/.kube/config
+```
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) \$HOME/.kube/config
+```
 
-## Check PODS
+4. Check PODS
 
-> kubectl get pods --all-namespaces
+```
+kubectl get pods --all-namespaces
+```
 
-## Add Flannel Network addon
+5. Add Flannel Network addon
 
-> kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+```
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+```
 
-## Check PODS
+6. Check PODS
 
-> kubectl get pods --all-namespaces
+```
+kubectl get pods --all-namespaces
+```
+
+> Result:
 
 ```
 NAMESPACE     NAME                           READY   STATUS    RESTARTS   AGE
@@ -171,21 +185,31 @@ kube-system   kube-proxy-dh2pj               1/1     Running   0          7m
 kube-system   kube-scheduler-kube            1/1     Running   0          7m8s
 ```
 
-# 단일 노드 클러스터이기 때문에 이 노드에 일반 POD도 띄울 수 있게 다음 명령어를 입력한다.
+## 단일 노드 클러스터이기 때문에 이 노드에 일반 POD도 띄울 수 있게 다음 명령어를 입력한다.
 
-## [taint란?](https://kubernetes.io/ko/docs/concepts/scheduling-eviction/taint-and-toleration/)
+1. [taint란?](https://kubernetes.io/ko/docs/concepts/scheduling-eviction/taint-and-toleration/)
 
-> kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
 
-# Install Ingress
+## Install Ingress
 
-## [설치방법](https://kubernetes.github.io/ingress-nginx/deploy/)
+**[설치방법](https://kubernetes.github.io/ingress-nginx/deploy/)**
 
-> kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.40.2/deploy/static/provider/baremetal/deploy.yaml
+1. kubectl apply
 
-# Deployment 확인
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.40.2/deploy/static/provider/baremetal/deploy.yaml
+```
 
-> kubectl get deploy --all-namespaces
+2. Deployment 확인
+
+```
+kubectl get deploy --all-namespaces
+```
+
+> Result:
 
 ```
 NAMESPACE       NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
@@ -193,15 +217,21 @@ ingress-nginx   ingress-nginx-controller   0/1     1            0           52s
 kube-system     coredns                    2/2     2            2           34m
 ```
 
-# 내용 확인 후 Deployment 수정
+3. 내용 확인 후 Deployment 수정
 
-## [옵션 수정](https://kubernetes.github.io/ingress-nginx/deploy/baremetal/#via-the-host-network)
+**[옵션 수정](https://kubernetes.github.io/ingress-nginx/deploy/baremetal/#via-the-host-network)**
 
-> kubectl edit deploy/ingress-nginx-controller -n ingress-nginx
+```
+kubectl edit deploy/ingress-nginx-controller -n ingress-nginx
+```
 
-## 수정사항 확인
+4. 수정사항 확인
 
-> kubectl -n ingress-nginx get pod -o wide
+```
+kubectl -n ingress-nginx get pod -o wide
+```
+
+> Result:
 
 ```
 NAME                                        READY   STATUS        RESTARTS   AGE     IP           NODE   NOMINATED NODE   READINESS GATES
@@ -211,23 +241,29 @@ ingress-nginx-controller-785557f9c9-bxs6h   1/1     Terminating   0          5h5
 ingress-nginx-controller-96588fb84-jcn9j    1/1     Running       0          14s     10.0.2.4     kube   <none>           <none>
 ```
 
-# [Dashboard 설치](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui)
+## [Dashboard 설치](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui)
 
-> kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+1. kubectl apply
 
-# [Create Sample User for Dashboard](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)
+**[Create Sample User for Dashboard](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)**
 
----
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+```
 
-## Creating a Service Account
+2. Creating a Service Account
 
-> cat <<EOF | kubectl apply -f -
-> apiVersion: v1
-> kind: ServiceAccount
-> metadata:
-> name: admin-user
-> namespace: kubernetes-dashboard
-> EOF
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+name: admin-user
+namespace: kubernetes-dashboard
+EOF
+```
+
+> Result:
 
 ```
 serviceaccount/admin-user created
