@@ -1,20 +1,16 @@
-# kubeadm으로 단일 노드 Kubernetes 클러스터 만들기
-
-**[참고 블로그](https://medium.com/@essem_dev/kubeadm%EC%9C%BC%EB%A1%9C-%EB%8B%A8%EC%9D%BC-%EB%85%B8%EB%93%9C-kubernetes-%ED%81%B4%EB%9F%AC%EC%8A%A4%ED%84%B0-%EB%A7%8C%EB%93%A4%EA%B8%B0-b3428ac6dbda)**
+# kubeadm으로 단일 노드 Kubernetes 클러스터 만들기 **[참고](https://medium.com/@essem_dev/kubeadm%EC%9C%BC%EB%A1%9C-%EB%8B%A8%EC%9D%BC-%EB%85%B8%EB%93%9C-kubernetes-%ED%81%B4%EB%9F%AC%EC%8A%A4%ED%84%B0-%EB%A7%8C%EB%93%A4%EA%B8%B0-b3428ac6dbda)**
 
 ## SWAP 비활성화
 
 1. swap 활성화 확인
+   > 출력이 비어있으면 스왑 공간이 비활성화되어있는 상태
 
 ```
 sudo swapon --show
 ```
 
-> 출력이 비어있으면 스왑 공간이 비활성화되어있는 상태
-
-2. swap 파일이 있을 경우, swap 기능 비활성화
-
-swap 파일이 있을 경우 *kubernetes*가 작동하지 않으며 따로 설정으로 해결해야함
+2. swap 파일이 있을 경우, swap 기능 비활성화.
+   > swap 파일이 있을 경우 *kubernetes*가 작동하지 않으며 따로 설정으로 해결해야함
 
 ```
 sudo swapoff -a
