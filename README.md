@@ -132,7 +132,7 @@ kubeadm join 10.0.2.15:6443 --token idofk0.80y0borfhelr8ch1 \
     --discovery-token-ca-cert-hash sha256:20eec08f0524de9827f3404a06c03160e8fb1d96fa5528f59ce7f6ed39ba3e43
 ```
 
-###### 실패유형
+##### 실패유형
 
 <p>
 1. swapoff가 아닌 경우
@@ -245,13 +245,13 @@ ingress-nginx-controller-96588fb84-jcn9j    1/1     Running       0          14s
 
 1. kubectl apply
 
-**[Create Sample User for Dashboard](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)**
-
 ```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
 ```
 
-2. Creating a Service Account
+2. **[Create Sample User for Dashboard](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)**
+
+3. Creating a Service Account
 
 ```
 cat <<EOF | kubectl apply -f -
@@ -269,31 +269,39 @@ EOF
 serviceaccount/admin-user created
 ```
 
-## Creating a ClusterRoleBinding
+4. Creating a ClusterRoleBinding
 
-> cat <<EOF | kubectl apply -f -
-> apiVersion: rbac.authorization.k8s.io/v1
-> kind: ClusterRoleBinding
-> metadata:
-> name: admin-user
-> roleRef:
-> apiGroup: rbac.authorization.k8s.io
-> kind: ClusterRole
-> name: cluster-admin
-> subjects:
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+name: admin-user
+roleRef:
+apiGroup: rbac.authorization.k8s.io
+kind: ClusterRole
+name: cluster-admin
+subjects:
 
 - kind: ServiceAccount
   name: admin-user
   namespace: kubernetes-dashboard
   EOF
+```
+
+> Result:
 
 ```
 clusterrolebinding.rbac.authorization.k8s.io/admin-user created
 ```
 
-## Getting a Bearer Token
+5. Getting a Bearer Token
 
-> kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+```
+kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+```
+
+> Result:
 
 ```
 Name:         admin-user-token-jql6l
@@ -311,15 +319,19 @@ namespace:  20 bytes
 token:      eyJhbGciOiJSUzI1NiIsImtpZCI6InpJTDBxSWZ1T1YzQS1zLTFrLXFqN1N5eVNFdkNSSXBTcWtScmg0N3B4cTAifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLWpxbDZsIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJiNjYxOGM1My0zMjU3LTRmZTYtYWI4MS0xMmE0Zjk4ZDZmNzYiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.px12prGtPFsksSGoZ0U9wT7ALEeJB8xySI0TYt95UiDtiTTou2wo8tuLKOlzKPLoHhSJnETnDhbI69rL6s0yXA8VssogQ907ekvuCyWE04s67aKduz9sYK8pAAOn6z7n0ylps1GFlRWHWdXd4B1juA7JbvJmIQgIJEdh3_BSNczBRSX-LV5fNFGEviD7aTcG5g4CRQrRxBEr4eh_LMGeykOuboCrPBmwLkdEyyFaaufn_cL8EMJfBI_7Xks-8MX28-dgmD6ZvQzEBc8bm5FUv_p4S4F8ONBChNKvdrzNzWil0cw-ncgN3PiR6CLZWBYEx00rPgwGEEY_m4_1LK532Q
 ```
 
-## Check Dashboard
+6. Check Dashboard
 
-> kubectl proxy --port=8080
+```
+kubectl proxy --port=8080
+```
 
-# Exploring the Kubernetes API
+## Exploring the Kubernetes API
 
----
+```
+curl http://localhost:8080/api/
+```
 
-> curl http://localhost:8080/api/
+> Result:
 
 ```
 {
@@ -336,7 +348,11 @@ token:      eyJhbGciOiJSUzI1NiIsImtpZCI6InpJTDBxSWZ1T1YzQS1zLTFrLXFqN1N5eVNFdkNS
 }
 ```
 
-> curl http://localhost:8080/api/v1/namespaces/default/pods
+```
+curl http://localhost:8080/api/v1/namespaces/default/pods
+```
+
+> Result:
 
 ```
 {
@@ -350,7 +366,11 @@ token:      eyJhbGciOiJSUzI1NiIsImtpZCI6InpJTDBxSWZ1T1YzQS1zLTFrLXFqN1N5eVNFdkNS
 }
 ```
 
-> curl http://localhost:8080/api/v1/namespaces/ingress-nginx/pods
+```
+curl http://localhost:8080/api/v1/namespaces/ingress-nginx/pods
+```
+
+> Result:
 
 ```
 {
@@ -554,13 +574,17 @@ token:      eyJhbGciOiJSUzI1NiIsImtpZCI6InpJTDBxSWZ1T1YzQS1zLTFrLXFqN1N5eVNFdkNS
 }
 ```
 
-# In Browser (visual studio에서 복사 붙여넣기 할 경우 우측 하단에 브라우저에서 열기가 뜸. 그걸 선택하면 확실히 보임.)
+## In Browser (visual studio에서 복사 붙여넣기 할 경우 우측 하단에 브라우저에서 열기가 뜸. 그걸 선택하면 확실히 보임.)
 
 http://127.0.0.1:8080/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 
-# 노드 상태 보기
+## 노드 상태 보기
 
-> kubectl describe node <node-name-ex_kube>
+```
+kubectl describe node <node-name-ex_kube>
+```
+
+> Result:
 
 ```
 Name:               kube
