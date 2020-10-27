@@ -562,9 +562,13 @@ curl http://localhost:8080/api/v1/namespaces/ingress-nginx/pods
 }
 ```
 
-## In Browser (visual studio에서 복사 붙여넣기 할 경우 우측 하단에 브라우저에서 열기가 뜸. 그걸 선택하면 확실히 보임.)
+## In Browser
 
-http://127.0.0.1:8080/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+> visual studio에서 복사 붙여넣기 할 경우 우측 하단에 브라우저에서 열기가 뜸. 그걸 선택하면 확실히 보임.
+
+```
+curl http://127.0.0.1:8080/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+```
 
 ## 노드 상태 보기
 
