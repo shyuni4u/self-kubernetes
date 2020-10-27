@@ -5,6 +5,7 @@ yarn add -D eslint eslint-config-airbnb eslint-plugin-import eslint-plugin-jsx-a
 yarn add -D prettier eslint-config-prettier eslint-plugin-prettier
 yarn add -D babel-eslint eslint-plugin-babel
 
+// first git: git pull origin master --allow-unrelated-histories
 
 // vscode addon setting Ctrl + ,
 {

@@ -1,94 +1,122 @@
-# [참고 kubeadm으로 단일 노드 Kubernetes 클러스터 만들기](https://medium.com/@essem_dev/kubeadm%EC%9C%BC%EB%A1%9C-%EB%8B%A8%EC%9D%BC-%EB%85%B8%EB%93%9C-kubernetes-%ED%81%B4%EB%9F%AC%EC%8A%A4%ED%84%B0-%EB%A7%8C%EB%93%A4%EA%B8%B0-b3428ac6dbda)
+# kubeadm으로 단일 노드 Kubernetes 클러스터 만들기
 
----
+**[참고](https://medium.com/@essem_dev/kubeadm%EC%9C%BC%EB%A1%9C-%EB%8B%A8%EC%9D%BC-%EB%85%B8%EB%93%9C-kubernetes-%ED%81%B4%EB%9F%AC%EC%8A%A4%ED%84%B0-%EB%A7%8C%EB%93%A4%EA%B8%B0-b3428ac6dbda)**
 
-## swap 활성화 확인
+## SWAP 비활성화
 
-> sudo swapon --show
+1. swap 활성화 확인
 
 ```
-출력이 비어있으면 스왑 공간이 비활성화되어있는 상태
+sudo swapon --show
 ```
 
-## swap 기능 비활성화
+> 출력이 비어있으면 스왑 공간이 비활성화되어있는 상태
 
-> sudo swapoff -a
+2. swap 파일이 있을 경우, swap 기능 비활성화
 
-## /etc/fstab swap 관련 라인 제거 (재부팅시 계속 비활성화)
+> swap 파일이 있을 경우 **kubernetes**가 작동하지 않으며 따로 설정으로 해결해야함
 
-> sudo nano /etc/fstab
+```
+sudo swapoff -a
+```
 
-# Install Docker CE
+3. /etc/fstab swap 관련 라인 제거 (재부팅시 계속 비활성화)
 
-## root login
+```
+sudo nano /etc/fstab
+```
 
-> sudo -i
+## Install Docker CE
 
-## Set up the repository:
+1. root login
 
-### Install packages to allow apt to use a repository over HTTPS
+> root 권한 없이 해봤는데 *kubeadm*에서 에러가 발생함.
 
-> apt-get update && apt-get install apt-transport-https ca-certificates curl software-properties-common
+```
+sudo -i
+```
 
-### Add Docker’s official GPG key
+2. Install packages to allow apt to use a repository over HTTPS
 
-> curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+```
+apt-get update && apt-get install apt-transport-https ca-certificates curl software-properties-common
+```
 
-### Add Docker apt repository.
+3. Add Docker’s official GPG key
 
-> add-apt-repository \
->  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
->  \$(lsb_release -cs) \
->  stable"
+```
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+```
 
-### Install Docker CE.
+4. Add Docker apt repository.
 
-> apt-get update && apt-get install docker-ce
+```
+add-apt-repository \
+ "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+ \$(lsb_release -cs) \
+ stable"
+```
 
-### Setup daemon.
+5. Install Docker CE.
 
-> cat > /etc/docker/daemon.json <<EOF
-> {
-> "exec-opts": ["native.cgroupdriver=systemd"],
-> "log-driver": "json-file",
-> "log-opts": {
+```
+apt-get update && apt-get install docker-ce
+```
 
-    "max-size": "100m"
+6. Setup daemon.
 
+```
+cat > /etc/docker/daemon.json <<EOF
+{
+"exec-opts": ["native.cgroupdriver=systemd"],
+"log-driver": "json-file",
+"log-opts": {
+  "max-size": "100m"
 },
 "storage-driver": "overlay2"
 }
 EOF
+```
 
-> mkdir -p /etc/systemd/system/docker.service.d
+```
+mkdir -p /etc/systemd/system/docker.service.d
+```
 
-### Restart docker.
+7. Restart docker.
 
-> systemctl daemon-reload
-> systemctl restart docker
+```
+systemctl daemon-reload
+systemctl restart docker
+```
 
-# Install kubeadm/kubelet/kubectl
+## Install kubeadm/kubelet/kubectl
 
-## [공식 사이트](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl)
+**[공식 사이트](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl)**
 
-> sudo apt-get update && sudo apt-get install -y apt-transport-https curl
-> curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-> cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
-> deb https://apt.kubernetes.io/ kubernetes-xenial main
-> EOF
-> sudo apt-get update
-> sudo apt-get install -y kubelet kubeadm kubectl
-> sudo apt-mark hold kubelet kubeadm kubectl
+```
+sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+```
 
-# Kubernetes 클러스터 생성
+## Kubernetes 클러스터 생성
 
-## Set network addon
+### Set network addon
 
-### [설명서1](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)
+**[설명서1](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)**
 
-### [설명서2](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
+**[설명서2](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)**
 
-> kubeadm init --pod-network-cidr=10.244.0.0/16
+```
+kubeadm init --pod-network-cidr=10.244.0.0/16
+```
+
+> Result:
 
 ```
 Your Kubernetes control-plane has initialized successfully!
@@ -106,10 +134,8 @@ kubeadm join 10.0.2.15:6443 --token idofk0.80y0borfhelr8ch1 \
 
 #### 실패유형
 
-```
 1. swapoff가 아닌 경우
 2. sudo 권한이 아닐 경우
-```
 
 ## Logout root & Login <user>
 
@@ -498,7 +524,7 @@ http://127.0.0.1:8080/api/v1/namespaces/kubernetes-dashboard/services/https:kube
 
 # 노드 상태 보기
 
-kubectl describe node <node-name-ex_kube>
+> kubectl describe node <node-name-ex_kube>
 
 ```
 Name:               kube
