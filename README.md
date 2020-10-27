@@ -108,7 +108,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 kubeadm init --pod-network-cidr=10.244.0.0/16
 ```
 
-> Result:
+> Output:
 
 ```
 Your Kubernetes control-plane has initialized successfully!
@@ -163,7 +163,7 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134
 kubectl get pods --all-namespaces
 ```
 
-> Result:
+> Output:
 
 ```
 NAMESPACE     NAME                           READY   STATUS    RESTARTS   AGE
@@ -199,7 +199,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/cont
 kubectl get deploy --all-namespaces
 ```
 
-> Result:
+> Output:
 
 ```
 NAMESPACE       NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
@@ -219,7 +219,7 @@ kubectl edit deploy/ingress-nginx-controller -n ingress-nginx
 kubectl -n ingress-nginx get pod -o wide
 ```
 
-> Result:
+> Output:
 
 ```
 NAME                                        READY   STATUS        RESTARTS   AGE     IP           NODE   NOMINATED NODE   READINESS GATES
@@ -251,7 +251,7 @@ namespace: kubernetes-dashboard
 EOF
 ```
 
-> Result:
+> Output:
 
 ```
 serviceaccount/admin-user created
@@ -277,7 +277,7 @@ subjects:
   EOF
 ```
 
-> Result:
+> Output:
 
 ```
 clusterrolebinding.rbac.authorization.k8s.io/admin-user created
@@ -289,7 +289,7 @@ clusterrolebinding.rbac.authorization.k8s.io/admin-user created
 kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
 ```
 
-> Result:
+> Output:
 
 ```
 Name:         admin-user-token-jql6l
@@ -319,7 +319,7 @@ kubectl proxy --port=8080
 curl http://localhost:8080/api/
 ```
 
-> Result:
+> Output:
 
 ```
 {
@@ -340,7 +340,7 @@ curl http://localhost:8080/api/
 curl http://localhost:8080/api/v1/namespaces/default/pods
 ```
 
-> Result:
+> Output:
 
 ```
 {
@@ -358,7 +358,7 @@ curl http://localhost:8080/api/v1/namespaces/default/pods
 curl http://localhost:8080/api/v1/namespaces/ingress-nginx/pods
 ```
 
-> Result:
+> Output:
 
 ```
 {
@@ -576,7 +576,7 @@ curl http://127.0.0.1:8080/api/v1/namespaces/kubernetes-dashboard/services/https
 kubectl describe node <node-name-ex_kube>
 ```
 
-> Result:
+> Output:
 
 ```
 Name:               kube
