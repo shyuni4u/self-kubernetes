@@ -87,7 +87,7 @@ systemctl daemon-reload
 systemctl restart docker
 ```
 
-## Install kubeadm/kubelet/kubectl **[Manual](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl)**
+## Install kubeadm/kubelet/kubectl **[참고](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl)**
 
 ```
 sudo apt-get update && sudo apt-get install -y apt-transport-https curl
@@ -102,7 +102,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 ## Kubernetes 클러스터 생성
 
-1. Set network addon **[Manual1](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)**, **[Manual2](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)**
+1. Set network addon **[참고1](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)**, **[참고2](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)**
 
 ```
 kubeadm init --pod-network-cidr=10.244.0.0/16
@@ -185,7 +185,7 @@ kube-system   kube-scheduler-kube            1/1     Running   0          7m8s
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
-## Install Ingress **[Manual](https://kubernetes.github.io/ingress-nginx/deploy/)**
+## Install Ingress **[참고](https://kubernetes.github.io/ingress-nginx/deploy/)**
 
 1. kubectl apply
 
@@ -207,7 +207,7 @@ ingress-nginx   ingress-nginx-controller   0/1     1            0           52s
 kube-system     coredns                    2/2     2            2           34m
 ```
 
-3. 내용 확인 후 Deployment 수정 **[Manual](https://kubernetes.github.io/ingress-nginx/deploy/baremetal/#via-the-host-network)**
+3. 내용 확인 후 Deployment 수정 **[참고](https://kubernetes.github.io/ingress-nginx/deploy/baremetal/#via-the-host-network)**
 
 ```
 kubectl edit deploy/ingress-nginx-controller -n ingress-nginx
@@ -229,7 +229,7 @@ ingress-nginx-controller-785557f9c9-bxs6h   1/1     Terminating   0          5h5
 ingress-nginx-controller-96588fb84-jcn9j    1/1     Running       0          14s     10.0.2.4     kube   <none>           <none>
 ```
 
-## Dashboard 설치 [Manual](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui)
+## Dashboard 설치 [참고](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui)
 
 1. kubectl apply
 
@@ -237,7 +237,7 @@ ingress-nginx-controller-96588fb84-jcn9j    1/1     Running       0          14s
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
 ```
 
-2. Create Sample User for Dashboard [Manual](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)
+2. Create Sample User for Dashboard [참고](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)
 
 3. Creating a Service Account
 
