@@ -2,6 +2,50 @@
 
 Make kubernetes admin page (with VirtualBox)
 
+## Install
+
+### Clone github repository
+
+`git clone https://github.com/shyuni4u/big5-wow.git`
+
+### Install yarn packages
+
+`yarn install`
+
+## Available Scripts
+
+In the project directory, you can run:
+
+#### `yarn dev`
+
+Runs the app in the development mode.<br />
+Open [http://localhost:9999](http://localhost:9999) to view it in the browser.
+
+The page will reload if you make edits.<br />
+You will also see any lint errors in the console.
+
+#### `yarn build`
+
+Develop your app as you normally do with Next.js.
+
+#### `yarn start`
+
+Runs `next start` which starts a Next.js production server.
+
+#### `yarn sb`
+
+**Storybook comes with two CLI utilities: `start-storybook` and `build-storybook`.**<br />
+**Pass these commands the following options to alter Storybook's behavior.**<br />
+Usage:<br />
+
+`start-storyboook [options]`
+
+##### Learn More
+
+You can learn more in the [start-storybook & build-storybook](https://storybook.js.org/docs/react/api/cli-options).
+
+---
+
 # kubeadm으로 단일 노드 Kubernetes 클러스터 만들기 **[참고](https://medium.com/@essem_dev/kubeadm%EC%9C%BC%EB%A1%9C-%EB%8B%A8%EC%9D%BC-%EB%85%B8%EB%93%9C-kubernetes-%ED%81%B4%EB%9F%AC%EC%8A%A4%ED%84%B0-%EB%A7%8C%EB%93%A4%EA%B8%B0-b3428ac6dbda)**
 
 ## SWAP 비활성화
