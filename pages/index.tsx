@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Todo, TodoProps } from '../components/organisms/Todo';
 import Wrapper from '../components/organisms/Wrapper';
@@ -15,7 +14,8 @@ export const Index: React.FC = () => {
         link: 'readme'
       },
       {
-        name: 'API test (get)'
+        name: 'API test (get)',
+        link: 'test'
       },
       {
         name: 'login'
