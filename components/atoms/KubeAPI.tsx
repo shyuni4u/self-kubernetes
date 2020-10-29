@@ -1,27 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import k8s from '@kubernetes/client-node';
+import axios from 'axios';
 
-export const KubeAPI: React.FC = () => {
+const token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6InpJTDBxSWZ1T1YzQS1zLTFrLXFqN1N5eVNFdkNSSXBTcWtScmg0N3B4cTAifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLWpxbDZsIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJiNjYxOGM1My0zMjU3LTRmZTYtYWI4MS0xMmE0Zjk4ZDZmNzYiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.px12prGtPFsksSGoZ0U9wT7ALEeJB8xySI0TYt95UiDtiTTou2wo8tuLKOlzKPLoHhSJnETnDhbI69rL6s0yXA8VssogQ907ekvuCyWE04s67aKduz9sYK8pAAOn6z7n0ylps1GFlRWHWdXd4B1juA7JbvJmIQgIJEdh3_BSNczBRSX-LV5fNFGEviD7aTcG5g4CRQrRxBEr4eh_LMGeykOuboCrPBmwLkdEyyFaaufn_cL8EMJfBI_7Xks-8MX28-dgmD6ZvQzEBc8bm5FUv_p4S4F8ONBChNKvdrzNzWil0cw-ncgN3PiR6CLZWBYEx00rPgwGEEY_m4_1LK532Q';
 
-  // useEffect(() => {
-  //   const kc = new k8s.KubeConfig();
-  //   kc.loadFromDefault();
-
-  //   const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
-
-  //   k8sApi.listNamespacedPod('ingress-nginx').then((res) => {
-  //     console.log(res.body)
-  //   })
-  // }, [])
-
-  return (
-    <article>
-      <h2>Doing</h2>
-      <ul>
-        <li>None</li>
-      </ul>
-    </article>
-  );
-};
-
-export default KubeAPI;
+export default axios.create({
+  baseURL: 'http://localhost:8080',
+  headers: {
+    Authorization: `Bearer ${token}`
+  }
+})

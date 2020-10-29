@@ -9,6 +9,7 @@
     "@types/react-toastify": "^4.1.0",
     "@types/styled-components": "^5.1.4",
     "@uiw/react-md-editor": "^1.14.5",
+    "axios": "^0.21.0",
     "gray-matter": "^4.0.2",
     "i18next": "^19.8.2",
     "next": "^9.5.5",
