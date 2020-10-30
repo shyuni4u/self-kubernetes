@@ -18,7 +18,7 @@ export const Todo: React.FC = () => {
 
   return (
     <>
-      {namespaces.data.items.map(item => item.metadata.name)}
+      {namespaces && namespaces.data.items.map(item => item.metadata.name)}
     </>
   );
 };
