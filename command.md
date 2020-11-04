@@ -341,7 +341,7 @@ curl http://localhost:8888/api/
 > visual studio에서 복사 붙여넣기 할 경우 우측 하단에 브라우저에서 열기가 뜸. 그걸 선택하면 확실히 보임.
 
 ```
-curl http://127.0.0.1:8888/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+curl http://127.0.0.1:9999/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 ```
 
 # Admin page setting
@@ -379,3 +379,71 @@ sudo docker run -it --rm -d -p 9090:80 --name web nginx
 sudo docker stop web
 sudo docker run -it --rm -d -p 9090:80 --name web -v ~/self-kubernetes/out:/usr/share/nginx/html nginx
 ```
+
+# docker image 만들기
+
+```
+sudo docker build -t webserver .
+sudo docker run -it --rm -d -p 9090:80 --name web webserver
+
+kubectl create deployment --image=webserver web-test
+```
+
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: api-test
+EOF
+```
+
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: api-test
+EOF
+```
+
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: api-test
+EOF
+```
+
+---
+
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bootstrap-token-0b1047
+  namespace: kube-system
+
+type: bootstrap.kubernetes.io/token
+stringData:
+  description: "For api test and dashboad."
+
+  token-id: 0b1047
+  token-secret: d25ea642dcca593f
+
+  usage-bootstrap-authentication: "true"
+  usage-bootstrap-signing: "true"
+EOF
+```
+

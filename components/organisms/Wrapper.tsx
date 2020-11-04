@@ -19,7 +19,7 @@ export const Wrapper: React.FC = ({ children }) => {
   return (
     <>
       <Head>
-        <title>Kubernetes - VirtualBox</title>
+        <title>Kubernetes - TEST SERVER</title>
         <script dangerouslySetInnerHTML={{ __html: `<!--googleoff: all-->` }} />
         <noscript>Sorry. My page needs script.</noscript>
       </Head>
