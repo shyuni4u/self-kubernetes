@@ -414,7 +414,7 @@ curl http://localhost:8888/api/
 > visual studio에서 복사 붙여넣기 할 경우 우측 하단에 브라우저에서 열기가 뜸. 그걸 선택하면 확실히 보임.
 
 ```sh
-curl http://127.0.0.1:9999/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+curl http://127.0.0.1:8888/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 ```
 
 # Admin page setting
