@@ -401,7 +401,7 @@ subjects:
 - kind: ServiceAccount
   name: admin-user
   namespace: kubernetes-dashboard
-  EOF
+EOF
 ```
 
 > Output:
