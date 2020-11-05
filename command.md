@@ -6,7 +6,7 @@
 
 > 출력이 비어있으면 스왑 공간이 비활성화되어있는 상태
 
-```
+```shell
 sudo swapon --show
 ```
 
@@ -229,7 +229,81 @@ ingress-nginx-controller-785557f9c9-bxs6h   1/1     Terminating   0          5h5
 ingress-nginx-controller-96588fb84-jcn9j    1/1     Running       0          14s     10.0.2.4     kube   <none>           <none>
 ```
 
-## Dashboard 설치 [참고](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui)
+## API 인증 **[참고](https://bryan.wiki/291)**
+
+**클러스터 관리자 권한을 가지는 별도의 특별한 계정을 생성하고 사용**
+
+> kube-system:root-sa 계정을 생성하고 cluster-admin이라는 ClusterRole(권한 집합)과 매핑(ClusterRoleBinding)하여 클러스터 관리자 권한을 부여한다.
+
+###### root-sa-admin-access.yaml
+
+```
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: root-sa
+  namespace: kube-system
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: root-sa-kube-system-cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: root-sa
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+```
+
+```
+kubectl apply -f root-sa-admin-access.yaml
+```
+
+> Output
+
+```
+clusterrolebinding "root-sa-kube-system-cluster-admin" created
+```
+
+> API 확인용 쉘 스크립트 작성
+
+###### check-apiserver-access-by-root.sh
+
+```shell
+#!/bin/bash
+# By modified RBAC policy, this 'curl' results in '200 OK'
+APISERVER=$(kubectl config view | grep server | cut -f 2- -d ":" | tr -d " ")
+
+# Retrieve 'root' account's TOKEN in 'kube-system' namespace
+ROOTTOKEN="$(kubectl get secret -nkube-system $(kubectl get secrets -nkube-system | grep root-sa | cut -f1 -d ' ') -o jsonpath='{$.data.token}' | base64 --decode)"
+curl -D - --insecure --header "Authorization: Bearer $ROOTTOKEN" $APISERVER/api/v1/namespaces/default/services
+```
+
+```
+sudo chmod +x check-apiserver-access-by-root.sh
+```
+
+## CORS 설정
+
+```
+sudo nano /etc/kubernetes/manifests/kube-apiserver.yaml
+```
+
+다음과 같이 수정
+
+```
+spec:
+  containers:
+  - command:
+    - kube-apiserver
+    - ...
+    - --cors-allowed-origins=.*
+```
+
+## Dashboard 설치 **[참고](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui)**
 
 1. kubectl apply
 
@@ -366,88 +440,10 @@ git clone https://github.com/shyuni4u/self-kubernetes.git
 
 ***http://127.0.0.1:8888/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/***
 
-#### 테스트
-
-```
-sudo nano /etc/kubernetes/manifests/kube-apiserver.yaml
-```
-
-# Nginx Docker 띄우기
+## Nginx Docker 띄우기
 
 ```
 sudo docker run -it --rm -d -p 9090:80 --name web nginx
 sudo docker stop web
 sudo docker run -it --rm -d -p 9090:80 --name web -v ~/self-kubernetes/out:/usr/share/nginx/html nginx
 ```
-
-# docker image 만들기
-
-```
-sudo docker build -t webserver .
-sudo docker run -it --rm -d -p 9090:80 --name web webserver
-
-kubectl create deployment --image=webserver web-test
-```
-
-```
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: api-test
-EOF
-```
-
-```
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: admin-user
-  namespace: api-test
-EOF
-```
-
-```
-cat <<EOF | kubectl apply -f -
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: admin-user
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-- kind: ServiceAccount
-  name: admin-user
-  namespace: api-test
-EOF
-```
-
----
-
-```
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Secret
-metadata:
-  name: bootstrap-token-0b1047
-  namespace: kube-system
-
-type: bootstrap.kubernetes.io/token
-stringData:
-  description: "For api test and dashboad."
-
-  token-id: 0b1047
-  token-secret: d25ea642dcca593f
-
-  usage-bootstrap-authentication: "true"
-  usage-bootstrap-signing: "true"
-EOF
-```
-
-# API TEST
-APISERVER=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
-TOKEN=$(kubectl get secret $(kubectl get serviceaccount default -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 --decode )
-curl $APISERVER/api --header "Authorization: Bearer $TOKEN" --insecure

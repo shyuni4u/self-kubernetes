@@ -8,9 +8,10 @@ export const Todo: React.FC = () => {
       await KubeHttp.get('/api/v1/namespaces', {
         // params: { query: text }
       }).then(response => {
+        // console.log(response)
         setNamespaces(response)
       }).catch(error => {
-        console.error(error)
+        console.log(error)
       });
     }
     onLoadTest();
@@ -19,8 +20,8 @@ export const Todo: React.FC = () => {
   return (
     <>
       <ul>
-        {namespaces && namespaces.data.items.map(item => (
-          <li>
+        {namespaces && namespaces.data.items.map((item, idx) => (
+          <li key={idx}>
             {item.metadata.name}
           </li>
         ))}

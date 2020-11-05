@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 import { Todo, TodoProps } from '../components/organisms/Todo';
+import ApiTest from '../components/organisms/Test';
 import Wrapper from '../components/organisms/Wrapper';
 
 export const Index: React.FC = () => {
   const { t } = useTranslation();
+  const [test, setTest] = useState<any>(null)
 
   const todo: TodoProps = {
     title: 'Todo',
@@ -56,6 +59,19 @@ export const Index: React.FC = () => {
     title: 'Done'
   }
 
+  useEffect(() => {
+    const onLoadTest = async () => {
+      await axios.get('https://searchconsole.googleapis.com/$discovery/rest?version=v1', {
+        // params: { query: text }
+      }).then(response => {
+        setTest(response)
+      }).catch(error => {
+        console.log(error)
+      });
+    }
+    onLoadTest();
+  }, [])
+
   // const changelanguageToKo = () => i18n.changeLanguage('ko');
   // const changelanguageToEn = () => i18n.changeLanguage('en');
   return (
@@ -70,6 +86,7 @@ export const Index: React.FC = () => {
       <Todo {...todo} />
       <Todo {...doing} />
       <Todo {...done} />
+      {test && test.data.description}
     </Wrapper>
   );
 };
