@@ -446,3 +446,9 @@ sudo docker run -it --rm -d -p 9090:80 --name web nginx
 sudo docker stop web
 sudo docker run -it --rm -d -p 9090:80 --name web -v ~/self-kubernetes/out:/usr/share/nginx/html nginx
 ```
+
+> Check installed GPU
+
+```sh
+sudo lshw -numeric -C display
+```

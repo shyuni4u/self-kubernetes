@@ -3,16 +3,6 @@ import auth from '../../.env/auth.json'
 
 const token = auth.token;
 
-export default axios.create({
-  // baseURL: 'http://localhost:9999',
-  // baseURL: 'https://searchconsole.googleapis.com/$discovery/rest?version=v1'
-  baseURL: 'https://10.96.8.208:6443',
-  headers: {
-    authorization: `Bearer ${token}`
-  }
-})
-
-
 // APISERVER=$(kubectl config view | grep server | cut -f 2- -d ":" | tr -d " ")
 // TOKEN=$(kubectl describe secret $(kubectl get secrets | grep default | cut -f1 -d ' ') | grep -E '^token' | cut -f2 -d':' | tr -d '\t')
 // curl https://10.96.8.208:6443/api --header "Authorization: Bearer $TOKEN" --insecure
@@ -21,3 +11,12 @@ export default axios.create({
 // curl http://localhost:8080/api --header "Authorization: Bearer $TOKEN"
 // curl http://localhost:9999/api --header "Authorization: Bearer $TOKEN"
 // sudo nano /etc/kubernetes/manifests/kube-apiserver.yaml
+
+export default axios.create({
+  // baseURL: 'http://localhost:9999',
+  // baseURL: 'https://searchconsole.googleapis.com/$discovery/rest?version=v1'
+  baseURL: 'https://10.96.8.208:6443',
+  headers: {
+    authorization: `Bearer ${token}`
+  }
+});
