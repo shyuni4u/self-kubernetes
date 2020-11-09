@@ -3,7 +3,7 @@
 # dependencies
 /node_modules
 /.next
-# /.env
+/.env
 /.pnp
 .pnp.js
 
@@ -24,3 +24,4 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.env/auth.json
