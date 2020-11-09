@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@storybook/addons": "^6.0.28",
     "@types/next-redux-wrapper": "^3.0.0",
     "@types/react-i18next": "^8.1.0",
     "@types/react-redux": "^7.1.11",
@@ -11,6 +12,7 @@
     "@types/redux": "^3.6.0",
     "@types/styled-components": "^5.1.4",
     "@uiw/react-md-editor": "^1.14.5",
+    "addon-redux": "^1.1.0",
     "axios": "^0.21.0",
     "i18next": "^19.8.2",
     "next": "^9.5.5",

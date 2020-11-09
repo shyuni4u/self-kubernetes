@@ -11,7 +11,7 @@ import reducerCount from '../reducers/reducerCount';
 
 export const Index: React.FC = () => {
   const { t } = useTranslation();
-  const [test, setTest] = useState<any>(null)
+  const [test, setTest] = useState<any>(null);
   const { gCount } = reducerCount();
 
   const kubernetes: TodoProps = {
@@ -19,8 +19,8 @@ export const Index: React.FC = () => {
     subtitle: 'Kubernetes API test',
     items: [
       {
-        name: 'API test (get)',
-        link: 'test'
+        name: 'API',
+        link: 'kubernetes/test'
       },
       {
         name: 'login'
@@ -29,27 +29,27 @@ export const Index: React.FC = () => {
         name: 'token'
       }
     ]
-  }
+  };
   const nvidia: TodoProps = {
     title: 'NVIDIA',
     subtitle: 'Nvidia-smi',
     items: [
       {
-        name: 'Connection test',
-        link: undefined
+        name: 'API',
+        link: 'nvidia/dashboard'
       }
     ]
-  }
+  };
   const amd: TodoProps = {
     title: 'AMD',
     subtitle: 'Rocm-smi',
     items: [
       {
-        name: 'Connection test',
-        link: undefined
+        name: 'API',
+        link: 'amd/dashboard'
       }
     ]
-  }
+  };
   const etc: TodoProps = {
     title: 'ETC',
     subtitle: 'test',
@@ -59,20 +59,26 @@ export const Index: React.FC = () => {
         link: 'readme'
       }
     ]
-  }
+  };
 
   useEffect(() => {
     const onLoadTest = async () => {
-      await axios.get('https://searchconsole.googleapis.com/$discovery/rest?version=v1', {
-        // params: { query: text }
-      }).then(response => {
-        setTest(response)
-      }).catch(error => {
-        console.log(error)
-      });
-    }
+      await axios
+        .get(
+          'https://searchconsole.googleapis.com/$discovery/rest?version=v1',
+          {
+            // params: { query: text }
+          }
+        )
+        .then((response) => {
+          setTest(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
     onLoadTest();
-  }, [])
+  }, []);
 
   // const changelanguageToKo = () => i18n.changeLanguage('ko');
   // const changelanguageToEn = () => i18n.changeLanguage('en');
@@ -84,19 +90,21 @@ export const Index: React.FC = () => {
         <button type={'button'} onClick={changelanguageToEn}>
           English
         </button> */}
-      <h1 style={{ marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
+      <h1
+        style={{ marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}
+      >
         Admin Page
       </h1>
       <Todo {...kubernetes} />
       <Todo {...nvidia} />
       <Todo {...amd} />
       <Todo {...etc} />
-      {/* {test && test.data.description} */}
-      <Panel>
+      {/* <Panel>
         <span>{gCount.get()}</span>
         <Button onClick={() => gCount.plus()}>plus</Button>
         <Button onClick={() => gCount.minus()}>minus</Button>
       </Panel>
+      {test && test.data.description} */}
     </Wrapper>
   );
 };

@@ -78,7 +78,7 @@ const colors = {
 };
 
 const secondaryColors = {};
-const fontFamily = ['SpoqaHanSans', 'Arial', 'Courier'].join(',');
+const fontFamily = ['Museo Sans', 'Noto Sans', 'Arial', 'Courier'].join(',');
 const fontSizes = {
   h1: '32px',
   h2: '24px',

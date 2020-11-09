@@ -15,7 +15,7 @@ export type TodoItemProps = {
    * Item link
    */
   link?: string;
-}
+};
 
 export type TodoProps = {
   /**
@@ -30,7 +30,7 @@ export type TodoProps = {
    * Todo array
    */
   items?: TodoItemProps[];
-}
+};
 
 export const Todo: React.FC<TodoProps> = ({
   title = undefined,
@@ -41,35 +41,37 @@ export const Todo: React.FC<TodoProps> = ({
     <Panel>
       {subtitle && <h3 className={'panel-sub-title'}>{subtitle}</h3>}
       {title && <h2 className={'panel-title'}>{title}</h2>}
-      {items.length > 0 && 
+      {items.length > 0 && (
         <div className={'panel-content'}>
-          {items.map((el, elIdx) =>
+          {items.map((el, elIdx) => (
             <Button
               key={elIdx}
               // disabled={el.link === undefined}
               primary={el.link === undefined}
               onClick={() => {
-              if (el.link === undefined) {
-                toast.error('Not yet', {
-                  position: 'top-center',
-                  autoClose: 3000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: false,
-                  draggable: true,
-                  progress: undefined
-                });
-              } else {
-                Router.push({
-                  pathname: `./${el.link}`,
-                  query: { name: el.name }
-                });
-              }
-            }}>
+                if (el.link === undefined) {
+                  toast.error('Not yet', {
+                    position: 'top-center',
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true,
+                    progress: undefined
+                  });
+                } else {
+                  Router.push({
+                    pathname: `/${el.link}`,
+                    query: { name: el.name }
+                  });
+                }
+              }}
+            >
               {el.name}
-            </Button>)}
+            </Button>
+          ))}
         </div>
-      }
+      )}
     </Panel>
   );
 };

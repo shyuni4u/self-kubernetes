@@ -12,6 +12,7 @@
 
 # production
 /out
+/fonts
 
 # misc
 .DS_Store
