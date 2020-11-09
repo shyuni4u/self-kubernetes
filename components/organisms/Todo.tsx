@@ -1,5 +1,10 @@
 import React from 'react';
-import Link from 'next/link';
+import Router from 'next/router';
+
+import { toast } from 'react-toastify';
+
+import Panel from '../atoms/Panel';
+import Button from '../atoms/Button';
 
 export type TodoItemProps = {
   /**
@@ -18,28 +23,54 @@ export type TodoProps = {
    */
   title?: string;
   /**
+   * Sub title
+   */
+  subtitle?: string;
+  /**
    * Todo array
    */
   items?: TodoItemProps[];
 }
 
 export const Todo: React.FC<TodoProps> = ({
-  title = 'TODO',
+  title = undefined,
+  subtitle = undefined,
   items = []
 }) => {
   return (
-    <article>
-      <h2>{title}</h2>
+    <Panel>
+      {subtitle && <h3 className={'panel-sub-title'}>{subtitle}</h3>}
+      {title && <h2 className={'panel-title'}>{title}</h2>}
       {items.length > 0 && 
-        <ul>
-          {items.map((el, elIdx) => <li key={elIdx}>
-            <Link href={`/${el.link}`}>
-              <a>{el.name}</a>
-            </Link>
-          </li>)}
-        </ul>
+        <div className={'panel-content'}>
+          {items.map((el, elIdx) =>
+            <Button
+              key={elIdx}
+              // disabled={el.link === undefined}
+              primary={el.link === undefined}
+              onClick={() => {
+              if (el.link === undefined) {
+                toast.error('Not yet', {
+                  position: 'top-center',
+                  autoClose: 3000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: false,
+                  draggable: true,
+                  progress: undefined
+                });
+              } else {
+                Router.push({
+                  pathname: `./${el.link}`,
+                  query: { name: el.name }
+                });
+              }
+            }}>
+              {el.name}
+            </Button>)}
+        </div>
       }
-    </article>
+    </Panel>
   );
 };
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const shell = require('shelljs');
-const xml2json = require('xml2json');
+// const xml2json = require('xml2json');
 
 const app = express();
 const port = 35100;
@@ -13,7 +13,7 @@ app.get('/test', (req, res) => {
 
 app.get('/api', (req, res) => {
   shell.exec('rocm-smi -a --json', (code, stdout, stderr) => {
-    res.send(xml2json.toJson(stdout));
+    res.send(stdout);
   });
 });
 

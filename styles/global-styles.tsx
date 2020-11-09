@@ -9,7 +9,8 @@ const GlobalStyle = createGlobalStyle`
   }
   body {
     /* background-color: #e8eaed; */
-    background-color: #ffffff;
+    background-color: #000;
+    color: #fff;
   }
   a {
     color: inherit;
