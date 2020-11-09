@@ -4,6 +4,8 @@ import axios from 'axios';
 import Wrapper from '../../components/organisms/Wrapper';
 import Panel from '../../components/atoms/Panel';
 
+import auth from '../../.env/auth.json';
+
 const dummy = {
   card1: {
     'GPU ID': '0x731f',
@@ -123,7 +125,7 @@ const dummy = {
 export type amd_result = typeof dummy;
 
 const amdApi = axios.create({
-  baseURL: 'http://147.46.219.60:35100',
+  baseURL: auth['amd-ip'],
   timeout: 5000
 });
 

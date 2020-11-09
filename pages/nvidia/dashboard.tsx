@@ -4,6 +4,8 @@ import axios from 'axios';
 import Wrapper from '../../components/organisms/Wrapper';
 import Panel from '../../components/atoms/Panel';
 
+import auth from '../../.env/auth.json';
+
 const dummy = {
   timestamp: 'Mon Nov  9 16:16:21 2020',
   driver_version: '440.33.01',
@@ -761,7 +763,7 @@ const dummy = {
 export type cuda_10_2_result = typeof dummy;
 
 const nvidiaApi = axios.create({
-  baseURL: 'http://147.46.219.42:35100',
+  baseURL: auth['nvidia-ip'],
   timeout: 5000
 });
 
