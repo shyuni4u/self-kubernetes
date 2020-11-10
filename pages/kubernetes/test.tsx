@@ -10,7 +10,7 @@ export const Test: React.FC = () => {
   return (
     <Wrapper>
       <ApiTest />
-      <span>{gCount.get()}</span>
+      <span>{gCount.get}</span>
     </Wrapper>
   );
 };

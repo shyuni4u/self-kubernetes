@@ -37,8 +37,8 @@ const StyledButton = styled.button`
     color: #ffd36b;
     outline-width: 0;
   }
-  -webkit-transition: .2s;
-  transition: .2s;
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
   &.primary {
     background: rgba(159, 22, 0, 0.6);
     border: 1px solid #ea3012;

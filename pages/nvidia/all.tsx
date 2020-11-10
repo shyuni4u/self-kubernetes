@@ -1,11 +1,39 @@
 import React, { useEffect, useState, Fragment } from 'react';
+import styled from 'styled-components';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 import Wrapper from '../../components/organisms/Wrapper';
 import Panel from '../../components/atoms/Panel';
+import Button from '../../components/atoms/Button';
 import DashboardItem from '../../components/atoms/DashboardItem';
 
 import auth from '../../.env/auth.json';
+
+import reducerDashboardInfo from '../../reducers/reducerDashboardInfo';
+
+const StyledList = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+  & > li {
+    flex: 1 1 auto;
+    align-self: center;
+    text-align: center;
+  }
+`;
+const StyledImportInput = styled.input`
+  background-color: #ddd;
+  color: #333;
+  width: calc(100% - 20px);
+  margin: 10px;
+  padding: 10px;
+`;
+const StyledExportBox = styled.div`
+  border: 1px solid #fff;
+  margin: 10px;
+  padding: 10px;
+  margin-bottom: 20px;
+`;
 
 const dummy = {
   timestamp: 'Mon Nov  9 16:16:21 2020',
@@ -769,7 +797,11 @@ const nvidiaApi = axios.create({
 });
 
 export const Dashboard: React.FC = () => {
-  const [result, setResult] = useState<cuda_10_2_result>(undefined);
+  const { dashboardInfo } = reducerDashboardInfo();
+  const [result, setResult] = useState<any>(undefined);
+  const [editMode, setEditMode] = useState<boolean>(false);
+  const [importInfo, setImportInfo] = useState<string>('');
+  const [exportInfo, setExportInfo] = useState<string>('');
 
   useEffect(() => {
     let unmount = false;
@@ -800,52 +832,115 @@ export const Dashboard: React.FC = () => {
     };
   }, []);
 
-  const printAll = (jsonObject: any, depth: number = 0) => {
+  const printAll = (jsonObject: any, edit: boolean, depth: number = 0) => {
     return Object.keys(jsonObject).map((key: string, index: number) => (
       <Fragment key={index}>
-        {typeof jsonObject[key] === 'string' && (
-          // !infoType['nvidia'].ignore.includes(key) &&
-          <DashboardItem
-            title={key}
-            value={jsonObject[key]}
-            depth={depth}
-            gpu={'nvidia'}
-          ></DashboardItem>
-        )}
-        {typeof jsonObject[key] === 'object' && (
-          // !infoType['nvidia'].ignore.includes(key) &&
-          <DashboardItem
-            title={key}
-            value={jsonObject[key]}
-            depth={depth}
-            gpu={'nvidia'}
-          >
-            {printAll(jsonObject[key], depth + 1)}
-          </DashboardItem>
-        )}
+        {typeof jsonObject[key] === 'string' &&
+          (editMode || !dashboardInfo.get['nvidia'].ignore.includes(key)) && (
+            <DashboardItem
+              title={key}
+              value={jsonObject[key]}
+              depth={depth}
+              gpu={'nvidia'}
+              edit={edit}
+            ></DashboardItem>
+          )}
+        {typeof jsonObject[key] === 'object' &&
+          (editMode || !dashboardInfo.get['nvidia'].ignore.includes(key)) && (
+            <DashboardItem
+              title={key}
+              value={jsonObject[key]}
+              depth={depth}
+              gpu={'nvidia'}
+              edit={edit}
+            >
+              {printAll(jsonObject[key], edit, depth + 1)}
+            </DashboardItem>
+          )}
       </Fragment>
     ));
+  };
+  const doImport = () => {
+    try {
+      const parse = JSON.parse(importInfo);
+      dashboardInfo.set(parse);
+      toast.success('Success', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined
+      });
+    } catch (e) {
+      toast.error('Invalid json', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined
+      });
+    }
+  };
+  const doExport = () => {
+    setExportInfo(JSON.stringify(dashboardInfo.get));
+  };
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(exportInfo);
+    toast.success('Copied', {
+      position: 'top-center',
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined
+    });
   };
 
   return (
     <Wrapper>
       {result && result.cuda_version === '10.2' && (
-        <>
-          <ul>
+        <Fragment>
+          <StyledList>
             <li>attached_gpus: {result.attached_gpus}</li>
             <li>cuda_version: {result.cuda_version}</li>
             <li>driver_version: {result.driver_version}</li>
             <li>timestamp: {result.timestamp}</li>
-          </ul>
+            <li>
+              <Button
+                primary={editMode}
+                onClick={() => setEditMode((prev) => !prev)}
+              >
+                {editMode ? 'edit' : 'readonly'}
+              </Button>
+              <Button onClick={() => doImport()}>Import</Button>
+              <Button onClick={() => doExport()}>Export</Button>
+            </li>
+          </StyledList>
+          <StyledImportInput
+            type="text"
+            placeholder={'Import json: '}
+            value={importInfo}
+            onChange={(e) => setImportInfo(e.target.value)}
+          />
+          {exportInfo !== '' && (
+            <StyledExportBox onClick={() => copyToClipboard()}>
+              {exportInfo}
+            </StyledExportBox>
+          )}
           {result.gpu.map((gpuEl, gpuIndex) => (
             <Panel key={gpuIndex}>
               <h2 className={'panel-title'}>GPU: {gpuEl.id}</h2>
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                {printAll(gpuEl)}
+                {printAll(gpuEl, editMode)}
               </div>
             </Panel>
           ))}
-        </>
+        </Fragment>
       )}
       {!result && <span>Can't connect to server</span>}
     </Wrapper>

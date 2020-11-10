@@ -70,7 +70,7 @@ const StyledPanelBox = styled.div`
 const StyledPanelContent = styled.div`
   margin-left: auto;
   margin-right: auto;
-  max-width: 1600px;
+  /* max-width: 1600px; */
   position: relative;
   top: 0;
   -webkit-transform: none;

@@ -35,7 +35,11 @@ export const Index: React.FC = () => {
     subtitle: 'Nvidia-smi',
     items: [
       {
-        name: 'API',
+        name: 'edit',
+        link: 'nvidia/all'
+      },
+      {
+        name: 'dashboard',
         link: 'nvidia/dashboard'
       }
     ]
@@ -45,8 +49,8 @@ export const Index: React.FC = () => {
     subtitle: 'Rocm-smi',
     items: [
       {
-        name: 'API',
-        link: 'amd/dashboard'
+        name: 'edit',
+        link: 'amd/all'
       }
     ]
   };
@@ -100,7 +104,7 @@ export const Index: React.FC = () => {
       <Todo {...amd} />
       <Todo {...etc} />
       {/* <Panel>
-        <span>{gCount.get()}</span>
+        <span>{gCount.get}</span>
         <Button onClick={() => gCount.plus()}>plus</Button>
         <Button onClick={() => gCount.minus()}>minus</Button>
       </Panel>
