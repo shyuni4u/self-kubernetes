@@ -19,25 +19,21 @@ export const Index: React.FC = () => {
     subtitle: 'Kubernetes API test',
     items: [
       {
-        name: 'API',
-        link: 'kubernetes/test'
-      },
-      {
-        name: 'login'
-      },
-      {
-        name: 'token'
+        name: 'API'
+        // link: 'kubernetes/test'
       }
+      // {
+      //   name: 'login'
+      // },
+      // {
+      //   name: 'token'
+      // }
     ]
   };
   const nvidia: TodoProps = {
     title: 'NVIDIA',
     subtitle: 'Nvidia-smi',
     items: [
-      {
-        name: 'edit',
-        link: 'nvidia/all'
-      },
       {
         name: 'dashboard',
         link: 'nvidia/dashboard'
@@ -49,8 +45,8 @@ export const Index: React.FC = () => {
     subtitle: 'Rocm-smi',
     items: [
       {
-        name: 'edit',
-        link: 'amd/all'
+        name: 'dashboard',
+        link: 'amd/dashboard'
       }
     ]
   };
@@ -59,8 +55,8 @@ export const Index: React.FC = () => {
     subtitle: 'test',
     items: [
       {
-        name: 'Markdown',
-        link: 'readme'
+        name: 'Markdown'
+        // link: 'readme'
       }
     ]
   };

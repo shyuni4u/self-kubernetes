@@ -20,7 +20,9 @@ export type ButtonProps = {
   onClick?: () => void;
 };
 
-const StyledButton = styled.button`
+const StyledButton = styled.button.attrs({
+  type: 'button'
+})`
   line-height: 1.5;
   font-weight: 400;
   background: rgba(0, 0, 0, 0.4);
@@ -62,7 +64,6 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <StyledButton
       style={style}
-      type={'button'}
       disabled={disabled}
       className={primary ? 'primary' : ''}
       {...props}

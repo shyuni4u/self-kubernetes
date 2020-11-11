@@ -17,6 +17,13 @@ export const Util = {
       pad2(date.getSeconds())
     );
   },
+  getMMSS: (): string => {
+    const pad2 = (n: number) => {
+      return n < 10 ? '0' + n : n;
+    };
+    const date = new Date();
+    return '' + pad2(date.getMinutes()) + ':' + pad2(date.getSeconds());
+  },
   exportCSVFile: (csv: string, fileName: string, header?: string): void => {
     if (header) csv = [header, csv].join('\n');
     const fileType = 'txt/csv;charset=utf-8';

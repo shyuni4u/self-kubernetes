@@ -60,10 +60,7 @@ export const Todo: React.FC<TodoProps> = ({
                     progress: undefined
                   });
                 } else {
-                  Router.push({
-                    pathname: `/${el.link}`,
-                    query: { name: el.name }
-                  });
+                  Router.push(`/${el.link}`);
                 }
               }}
             >

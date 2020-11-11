@@ -1,11 +1,87 @@
 import React, { useEffect, useState, Fragment } from 'react';
+import styled from 'styled-components';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 import Wrapper from '../../components/organisms/Wrapper';
 import Panel from '../../components/atoms/Panel';
+import Button from '../../components/atoms/Button';
 import DashboardItem from '../../components/atoms/DashboardItem';
 
 import auth from '../../.env/auth.json';
+
+import reducerDashboardInfo from '../../reducers/reducerDashboardInfo';
+
+const StyledHeader = styled.header`
+  width: 100%;
+  height: 114px;
+  position: fixed;
+  top: 0px;
+  z-index: 1;
+  margin-bottom: 10px;
+  background-color: #000;
+  ${({ theme }) => theme.media.tablet`
+    height: auto;
+    position: inherit;
+  `}
+  ${({ theme }) => theme.media.mobile`
+    height: auto;
+    position: inherit;
+  `}
+`;
+const StyledBody = styled.article`
+  margin-top: 114px;
+  ${({ theme }) => theme.media.tablet`
+    margin-top: 0;
+  `}
+  ${({ theme }) => theme.media.mobile`
+    margin-top: 0;
+  `}
+`;
+
+const StyledList = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+  & > li {
+    flex: 1 1 auto;
+    align-self: center;
+    text-align: center;
+  }
+  ${({ theme }) => theme.media.tablet`
+    flex-direction: column;
+  `}
+  ${({ theme }) => theme.media.mobile`
+    flex-direction: column;
+  `}
+`;
+const StyledPageButton = styled.button.attrs({
+  type: 'button'
+})`
+  line-height: 1.5;
+  font-weight: 400;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid #c77e19;
+  color: #f7b10a;
+  margin: 10px;
+  padding: 6px 15px;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:hover {
+    background: #b06601;
+    color: #ffd36b;
+    outline-width: 0;
+  }
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+`;
+const StyledImportInput = styled.input`
+  background-color: #ddd;
+  color: #333;
+  width: calc(100% - 20px);
+  margin: 0 10px 10px;
+  padding: 10px;
+`;
 
 const dummy = {
   timestamp: 'Mon Nov  9 16:16:21 2020',
@@ -769,7 +845,11 @@ const nvidiaApi = axios.create({
 });
 
 export const Dashboard: React.FC = () => {
+  const { dashboardInfo } = reducerDashboardInfo();
   const [result, setResult] = useState<cuda_10_2_result>(undefined);
+  const [editMode, setEditMode] = useState<boolean>(false);
+  const [importInfo, setImportInfo] = useState<string>('');
+  const [selectedGpu, setSelectedGpu] = useState<number>(0);
 
   useEffect(() => {
     let unmount = false;
@@ -800,52 +880,158 @@ export const Dashboard: React.FC = () => {
     };
   }, []);
 
-  const printAll = (jsonObject: any, depth: number = 0) => {
+  const printAll = (
+    jsonObject: any,
+    edit: boolean,
+    refreshValue: number,
+    depth: number = 0
+  ) => {
     return Object.keys(jsonObject).map((key: string, index: number) => (
       <Fragment key={index}>
-        {typeof jsonObject[key] === 'string' && (
-          // !infoType['nvidia'].ignore.includes(key) &&
-          <DashboardItem
-            title={key}
-            value={jsonObject[key]}
-            depth={depth}
-            gpu={'nvidia'}
-          ></DashboardItem>
-        )}
-        {typeof jsonObject[key] === 'object' && (
-          // !infoType['nvidia'].ignore.includes(key) &&
-          <DashboardItem
-            title={key}
-            value={jsonObject[key]}
-            depth={depth}
-            gpu={'nvidia'}
-          >
-            {printAll(jsonObject[key], depth + 1)}
-          </DashboardItem>
-        )}
+        {typeof jsonObject[key] === 'string' &&
+          (editMode || !dashboardInfo.get['nvidia'].ignore.includes(key)) && (
+            <DashboardItem
+              title={key}
+              value={jsonObject[key]}
+              depth={depth}
+              gpu={'nvidia'}
+              edit={edit}
+              refreshValue={refreshValue}
+            ></DashboardItem>
+          )}
+        {typeof jsonObject[key] === 'object' &&
+          (editMode || !dashboardInfo.get['nvidia'].ignore.includes(key)) && (
+            <DashboardItem
+              title={key}
+              value={jsonObject[key]}
+              depth={depth}
+              gpu={'nvidia'}
+              edit={edit}
+              refreshValue={refreshValue}
+            >
+              {printAll(jsonObject[key], edit, depth + 1)}
+            </DashboardItem>
+          )}
       </Fragment>
     ));
+  };
+  const doImport = () => {
+    try {
+      const parse = JSON.parse(importInfo);
+      dashboardInfo.set(parse);
+      toast.success('Success', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined
+      });
+    } catch (e) {
+      toast.error('Invalid json', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined
+      });
+    }
+  };
+  const doExport = () => {
+    navigator.clipboard.writeText(JSON.stringify(dashboardInfo.get));
+    toast.success('Copied', {
+      position: 'top-center',
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined
+    });
   };
 
   return (
     <Wrapper>
       {result && result.cuda_version === '10.2' && (
-        <>
-          <ul>
-            <li>attached_gpus: {result.attached_gpus}</li>
-            <li>cuda_version: {result.cuda_version}</li>
-            <li>driver_version: {result.driver_version}</li>
-            <li>timestamp: {result.timestamp}</li>
-          </ul>
-          {result.gpu.map((gpuEl, gpuIndex) => (
-            <Panel key={gpuIndex}>
-              <h2 className={'panel-title'}>GPU: {gpuEl.id}</h2>
-              <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                {printAll(gpuEl)}
-              </div>
+        <Fragment>
+          <StyledHeader>
+            <StyledList>
+              <li>
+                {result.gpu.map((_: any, gpuIndex: number) => (
+                  <StyledPageButton
+                    key={gpuIndex}
+                    style={{
+                      backgroundColor:
+                        gpuIndex === selectedGpu ? '#b06601' : '',
+                      color: gpuIndex === selectedGpu ? '#ffd36b' : ''
+                    }}
+                    onClick={() => setSelectedGpu(gpuIndex)}
+                  >
+                    {gpuIndex + 1}
+                  </StyledPageButton>
+                ))}
+                <StyledPageButton
+                  style={{
+                    backgroundColor: selectedGpu === -1 ? '#b06601' : '',
+                    color: selectedGpu === -1 ? '#ffd36b' : ''
+                  }}
+                  onClick={() => setSelectedGpu(-1)}
+                >
+                  ALL
+                </StyledPageButton>
+              </li>
+              <li>attached_gpus: {result.attached_gpus}</li>
+              <li>cuda_version: {result.cuda_version}</li>
+              <li>driver_version: {result.driver_version}</li>
+              <li>timestamp: {result.timestamp}</li>
+              <li>
+                <Button
+                  primary={editMode}
+                  onClick={() => setEditMode((prev) => !prev)}
+                >
+                  {editMode ? 'edit' : 'readonly'}
+                </Button>
+                <Button onClick={() => doImport()}>Import</Button>
+                <Button onClick={() => doExport()}>Export</Button>
+              </li>
+            </StyledList>
+            <StyledImportInput
+              type="text"
+              placeholder={'Import json: '}
+              value={importInfo}
+              onChange={(e) => setImportInfo(e.target.value)}
+            />
+          </StyledHeader>
+          <StyledBody>
+            <Panel>
+              {selectedGpu !== -1 && (
+                <Fragment>
+                  <h2 className={'panel-title'}>
+                    GPU {selectedGpu + 1} : {result.gpu[selectedGpu].id}
+                  </h2>
+                  <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                    {printAll(result.gpu[selectedGpu], editMode, selectedGpu)}
+                  </div>
+                </Fragment>
+              )}
+              {selectedGpu === -1 &&
+                result.gpu.map((gpuEl, gpuIndex) => (
+                  <Panel key={gpuIndex}>
+                    <h2 className={'panel-title'}>
+                      GPU {gpuIndex + 1} : {gpuEl.id}
+                    </h2>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                      {printAll(gpuEl, editMode, gpuIndex)}
+                    </div>
+                  </Panel>
+                ))}
             </Panel>
-          ))}
-        </>
+          </StyledBody>
+          {/*  */}
+        </Fragment>
       )}
       {!result && <span>Can't connect to server</span>}
     </Wrapper>
