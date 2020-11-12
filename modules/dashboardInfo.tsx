@@ -64,7 +64,15 @@ export const initialState: dashboardInfoState = {
       'supported_clocks'
     ]
   },
-  amd: { realtime: ['Average Graphics Package Power (W)'], ignore: [] }
+  amd: {
+    realtime: [
+      'Average Graphics Package Power (W)',
+      'Temperature (Sensor edge) (C)',
+      'Temperature (Sensor junction) (C)',
+      'Temperature (Sensor mem) (C)'
+    ],
+    ignore: []
+  }
 };
 
 export const setDashboardIfno = (obj: dashboardInfoState) => ({
