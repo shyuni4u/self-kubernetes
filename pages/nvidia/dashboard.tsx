@@ -887,7 +887,7 @@ export const Dashboard: React.FC = () => {
     depth: number = 0
   ) => {
     return Object.keys(jsonObject).map((key: string, index: number) => (
-      <Fragment key={index}>
+      <Fragment key={`${index}-${refreshValue}-${depth}`}>
         {typeof jsonObject[key] === 'string' &&
           (editMode || !dashboardInfo.get['nvidia'].ignore.includes(key)) && (
             <DashboardItem

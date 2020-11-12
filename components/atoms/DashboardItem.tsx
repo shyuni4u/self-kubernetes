@@ -87,55 +87,41 @@ export const DashboardItem: React.FC<DashboardItemProps> = ({
   const { dashboardInfo, dashboardData } = reducerDashboardInfo();
   const [chartData, setChartData] = useState<chartProps[]>([]);
 
-  //  refreshValue 변하는데 안변한다???
+  useEffect(() => {
+    const tempArray = chartData;
+    if (tempArray.length == CHART_X_SIZE) {
+      tempArray[CHART_X_SIZE - 1].val = value;
+      setChartData([...tempArray]);
+    }
+  }, [value]);
 
   useEffect(() => {
-    const initArray = [];
-    for (let n = 0; n < CHART_X_SIZE - 1; n++) {
-      initArray.push({
-        x: '',
-        val: 0
-      });
-    }
-    // console.log(title, refreshValue);
     if (!edit && dashboardInfo.get[gpu].realtime.includes(title)) {
-      console.log('refresh');
       let unmount = false;
+      const tempArray: Array<chartProps> = [];
+
       const updateData = () => {
-        let data = dashboardData.get;
-        if (data === undefined) data = {};
-        if (!unmount && data) {
-          //  check ready
-          if (`${gpu}-${refreshValue}-${title}` in data) {
-            //  add data
-            const temp = data;
-            const tempArray: Array<chartProps> =
-              temp[`${gpu}-${refreshValue}-${title}`];
-            const tempValue: chartProps = {
+        if (!unmount) {
+          if (tempArray.length === 0) {
+            for (let n = 0; n < CHART_X_SIZE; n++) {
+              tempArray.push({
+                x: '',
+                val: '0'
+              });
+            }
+            tempArray[CHART_X_SIZE - 1] = {
               x: Util.getMMSS(),
               val: value
             };
-
-            if (tempArray.length > CHART_X_SIZE) tempArray.shift();
-            tempArray.push(tempValue);
-            setChartData(tempArray);
-
-            temp[`${gpu}-${refreshValue}-${title}`] = tempArray;
-            if (temp) dashboardData.set(temp);
+            setChartData([...tempArray]);
           } else {
-            //  init
-            const temp = data;
-            const tempArray = initArray;
             const tempValue: chartProps = {
               x: Util.getMMSS(),
               val: value
             };
+            if (tempArray.length > CHART_X_SIZE - 1) tempArray.shift();
             tempArray.push(tempValue);
             setChartData(tempArray);
-
-            temp[`${gpu}-${refreshValue}-${title}`] = tempArray;
-
-            if (temp) dashboardData.set(temp);
           }
         }
       };
@@ -145,7 +131,6 @@ export const DashboardItem: React.FC<DashboardItemProps> = ({
       }, 1 * 1000);
 
       return () => {
-        console.log('clear');
         unmount = true;
         clearInterval(interval);
       };
@@ -176,7 +161,7 @@ export const DashboardItem: React.FC<DashboardItemProps> = ({
     }
   };
 
-  const getOption = () => {
+  const getOption = (data: Array<chartProps>) => {
     return {
       title: {
         text: `${title}: ${value}`,
@@ -206,7 +191,7 @@ export const DashboardItem: React.FC<DashboardItemProps> = ({
         axisTick: {
           show: false
         },
-        data: chartData.map((item) => item.x)
+        data: data.map((item) => item.x)
       },
       yAxis: {
         type: 'value',
@@ -217,7 +202,7 @@ export const DashboardItem: React.FC<DashboardItemProps> = ({
       },
       series: [
         {
-          data: chartData.map((item) => parseInt(item.val, 10)),
+          data: data.map((item) => parseInt(item.val, 10)),
           type: 'line',
           showSymbol: false,
           hoverAnimation: false,
@@ -248,7 +233,7 @@ export const DashboardItem: React.FC<DashboardItemProps> = ({
       return (
         <StyledChartWrapper>
           <ReactEcharts
-            option={getOption()}
+            option={getOption(chartData)}
             notMerge={true}
             lazyUpdate={true}
             // style={{ height: '100%', width: '100%' }}
