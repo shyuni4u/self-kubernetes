@@ -849,7 +849,7 @@ export const Dashboard: React.FC = () => {
   const [result, setResult] = useState<cuda_10_2_result>(undefined);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [importInfo, setImportInfo] = useState<string>('');
-  const [selectedGpu, setSelectedGpu] = useState<number>(0);
+  const [selectedGpu, setSelectedGpu] = useState<number>(-1);
 
   useEffect(() => {
     let unmount = false;
@@ -941,7 +941,15 @@ export const Dashboard: React.FC = () => {
     }
   };
   const doExport = () => {
-    navigator.clipboard.writeText(JSON.stringify(dashboardInfo.get));
+    // navigator.clipboard.writeText(JSON.stringify(dashboardInfo.get));
+    const tempElem = document.createElement('textarea');
+    tempElem.value = JSON.stringify(dashboardInfo.get);
+    document.body.appendChild(tempElem);
+
+    tempElem.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempElem);
+
     toast.success('Copied', {
       position: 'top-center',
       autoClose: 3000,
@@ -1006,16 +1014,16 @@ export const Dashboard: React.FC = () => {
             />
           </StyledHeader>
           <StyledBody>
-            <Panel>
+            <Fragment>
               {selectedGpu !== -1 && (
-                <Fragment>
+                <Panel>
                   <h2 className={'panel-title'}>
                     GPU {selectedGpu + 1} : {result.gpu[selectedGpu].id}
                   </h2>
                   <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                     {printAll(result.gpu[selectedGpu], editMode, selectedGpu)}
                   </div>
-                </Fragment>
+                </Panel>
               )}
               {selectedGpu === -1 &&
                 result.gpu.map((gpuEl, gpuIndex) => (
@@ -1028,9 +1036,8 @@ export const Dashboard: React.FC = () => {
                     </div>
                   </Panel>
                 ))}
-            </Panel>
+            </Fragment>
           </StyledBody>
-          {/*  */}
         </Fragment>
       )}
       {!result && <span>Can't connect to server</span>}

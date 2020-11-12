@@ -84,7 +84,7 @@ export const DashboardItem: React.FC<DashboardItemProps> = ({
   refreshValue = undefined,
   ...props
 }) => {
-  const { dashboardInfo, dashboardData } = reducerDashboardInfo();
+  const { dashboardInfo } = reducerDashboardInfo();
   const [chartData, setChartData] = useState<chartProps[]>([]);
 
   useEffect(() => {
