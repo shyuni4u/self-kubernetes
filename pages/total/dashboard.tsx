@@ -30,7 +30,9 @@ const StyledHeader = styled.header`
   `}
 `;
 const StyledBody = styled.article`
+  scroll-margin-top: 114px;
   margin-top: 114px;
+  margin-bottom: 10px;
   ${({ theme }) => theme.media.tablet`
     margin-top: 0;
   `}
@@ -212,6 +214,14 @@ export const Dashboard: React.FC = () => {
           <StyledHeader>
             <StyledList>
               <li>
+                <a href={'#nvidia'}>
+                  <Button>NVIDIA</Button>
+                </a>
+                <a href={'#amd'}>
+                  <Button>AMD</Button>
+                </a>
+              </li>
+              <li>
                 <Button
                   primary={editMode}
                   onClick={() => setEditMode((prev) => !prev)}
@@ -229,7 +239,7 @@ export const Dashboard: React.FC = () => {
               onChange={(e) => setImportInfo(e.target.value)}
             />
           </StyledHeader>
-          <StyledBody>
+          <StyledBody id={'nvidia'}>
             <Fragment>
               {nvidiaResult.gpu.map((gpuEl, gpuIndex) => (
                 <Panel key={gpuIndex}>
@@ -244,7 +254,7 @@ export const Dashboard: React.FC = () => {
             </Fragment>
           </StyledBody>
 
-          <article style={{ marginTop: '10px' }}>
+          <article id={'amd'} style={{ scrollMarginTop: '114px' }}>
             <Fragment>
               {amdResult &&
                 amdResult.data &&
@@ -265,8 +275,18 @@ export const Dashboard: React.FC = () => {
           </article>
         </Fragment>
       )}
-      {!nvidiaResult && <span>Can't connect to nvidia server</span>}
-      {!amdResult && <span>Can't connect to amd server</span>}
+      {!nvidiaResult && (
+        <span>
+          Can't connect to nvidia server
+          <br />
+        </span>
+      )}
+      {!amdResult && (
+        <span>
+          Can't connect to amd server
+          <br />
+        </span>
+      )}
     </Wrapper>
   );
 };
