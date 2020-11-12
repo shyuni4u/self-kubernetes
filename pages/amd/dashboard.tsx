@@ -138,7 +138,6 @@ export const Dashboard: React.FC = () => {
     refreshValue: number,
     depth: number = 0
   ) => {
-    console.log('printAll');
     return Object.keys(jsonObject).map((key: string, index: number) => (
       <Fragment key={`${index}-${refreshValue}-${depth}`}>
         {typeof jsonObject[key] === 'string' &&
