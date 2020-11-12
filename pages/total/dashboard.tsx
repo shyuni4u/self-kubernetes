@@ -54,27 +54,6 @@ const StyledList = styled.ul`
     flex-direction: column;
   `}
 `;
-const StyledPageButton = styled.button.attrs({
-  type: 'button'
-})`
-  line-height: 1.5;
-  font-weight: 400;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid #c77e19;
-  color: #f7b10a;
-  margin: 10px;
-  padding: 6px 15px;
-  text-transform: uppercase;
-  cursor: pointer;
-
-  &:hover {
-    background: #b06601;
-    color: #ffd36b;
-    outline-width: 0;
-  }
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
-`;
 const StyledImportInput = styled.input`
   background-color: #ddd;
   color: #333;
@@ -83,6 +62,10 @@ const StyledImportInput = styled.input`
   padding: 10px;
 `;
 
+const nvidiaApi = axios.create({
+  baseURL: auth['nvidia-ip'],
+  timeout: 5000
+});
 const amdApi = axios.create({
   baseURL: auth['amd-ip'],
   timeout: 5000
@@ -90,24 +73,38 @@ const amdApi = axios.create({
 
 export const Dashboard: React.FC = () => {
   const { dashboardInfo } = reducerDashboardInfo();
-  const [result, setResult] = useState<any>(undefined);
+  const [nvidiaResult, setNvidiaResult] = useState<any>(undefined);
+  const [amdResult, setAmdResult] = useState<any>(undefined);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [importInfo, setImportInfo] = useState<string>('');
   const [amdGpuList, setAmdGpuList] = useState<string[]>([]);
-  const [selectedGpu, setSelectedGpu] = useState<string>('ALL');
 
   useEffect(() => {
     let unmount = false;
     const onLoadApi = async () => {
+      await nvidiaApi
+        .get('/api')
+        .then((response) => {
+          if (unmount) return;
+          if (response.status === 200) {
+            setNvidiaResult(response.data.nvidia_smi_log);
+          } else {
+            setNvidiaResult(undefined);
+          }
+        })
+        .catch((error) => {
+          if (unmount) return;
+          console.log('error', error);
+        });
       await amdApi
         .get('/api')
         .then((response) => {
           if (unmount) return;
           if (response.status === 200) {
-            setResult(response);
+            setAmdResult(response);
             setAmdGpuList(Object.keys(response.data));
           } else {
-            setResult(undefined);
+            setAmdResult(undefined);
           }
         })
         .catch((error) => {
@@ -129,33 +126,34 @@ export const Dashboard: React.FC = () => {
   const printAll = (
     jsonObject: any,
     edit: boolean,
+    gpu: string,
     refreshValue: number,
     depth: number = 0
   ) => {
     return Object.keys(jsonObject).map((key: string, index: number) => (
       <Fragment key={`${index}-${refreshValue}-${depth}-${edit}`}>
         {typeof jsonObject[key] === 'string' &&
-          (editMode || !dashboardInfo.get['amd'].ignore.includes(key)) && (
+          (editMode || !dashboardInfo.get[gpu].ignore.includes(key)) && (
             <DashboardItem
               title={key}
               value={jsonObject[key]}
               depth={depth}
-              gpu={'amd'}
+              gpu={gpu}
               edit={edit}
               refreshValue={refreshValue}
             ></DashboardItem>
           )}
         {typeof jsonObject[key] === 'object' &&
-          (editMode || !dashboardInfo.get['amd'].ignore.includes(key)) && (
+          (editMode || !dashboardInfo.get[gpu].ignore.includes(key)) && (
             <DashboardItem
               title={key}
               value={jsonObject[key]}
               depth={depth}
-              gpu={'amd'}
+              gpu={gpu}
               edit={edit}
               refreshValue={refreshValue}
             >
-              {printAll(jsonObject[key], edit, depth + 1)}
+              {printAll(jsonObject[key], edit, gpu, depth + 1)}
             </DashboardItem>
           )}
       </Fragment>
@@ -209,33 +207,10 @@ export const Dashboard: React.FC = () => {
 
   return (
     <Wrapper>
-      {result && result.data && (
+      {nvidiaResult && nvidiaResult.cuda_version === '10.2' && (
         <Fragment>
           <StyledHeader>
             <StyledList>
-              <li>
-                {amdGpuList.map((gpuEl: any, gpuIndex: number) => (
-                  <StyledPageButton
-                    key={gpuIndex}
-                    style={{
-                      backgroundColor: gpuEl === selectedGpu ? '#b06601' : '',
-                      color: gpuEl === selectedGpu ? '#ffd36b' : ''
-                    }}
-                    onClick={() => setSelectedGpu(gpuEl)}
-                  >
-                    {gpuEl}
-                  </StyledPageButton>
-                ))}
-                <StyledPageButton
-                  style={{
-                    backgroundColor: selectedGpu === 'ALL' ? '#b06601' : '',
-                    color: selectedGpu === 'ALL' ? '#ffd36b' : ''
-                  }}
-                  onClick={() => setSelectedGpu('ALL')}
-                >
-                  ALL
-                </StyledPageButton>
-              </li>
               <li>
                 <Button
                   primary={editMode}
@@ -256,34 +231,42 @@ export const Dashboard: React.FC = () => {
           </StyledHeader>
           <StyledBody>
             <Fragment>
-              {selectedGpu !== 'ALL' && result && result.data && (
-                <Panel>
-                  <h2 className={'panel-title'}>{selectedGpu}</h2>
+              {nvidiaResult.gpu.map((gpuEl, gpuIndex) => (
+                <Panel key={gpuIndex}>
+                  <h2 className={'panel-title'}>
+                    GPU {gpuIndex + 1} : {gpuEl.id}
+                  </h2>
                   <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                    {printAll(
-                      result.data[selectedGpu],
-                      editMode,
-                      amdGpuList.indexOf(selectedGpu)
-                    )}
+                    {printAll(gpuEl, editMode, 'nvidia', gpuIndex)}
                   </div>
                 </Panel>
-              )}
-              {selectedGpu === 'ALL' &&
-                result &&
-                result.data &&
+              ))}
+            </Fragment>
+          </StyledBody>
+
+          <article style={{ marginTop: '10px' }}>
+            <Fragment>
+              {amdResult &&
+                amdResult.data &&
                 amdGpuList.map((gpuEl, gpuIndex) => (
                   <Panel key={gpuIndex}>
                     <h2 className={'panel-title'}>GPU: {gpuEl}</h2>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                      {printAll(result.data[gpuEl], editMode, gpuIndex)}
+                      {printAll(
+                        amdResult.data[gpuEl],
+                        editMode,
+                        'amd',
+                        gpuIndex
+                      )}
                     </div>
                   </Panel>
                 ))}
             </Fragment>
-          </StyledBody>
+          </article>
         </Fragment>
       )}
-      {!result && <span>Can't connect to server</span>}
+      {!nvidiaResult && <span>Can't connect to nvidia server</span>}
+      {!amdResult && <span>Can't connect to amd server</span>}
     </Wrapper>
   );
 };

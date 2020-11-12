@@ -64,7 +64,7 @@ export const initialState: dashboardInfoState = {
       'supported_clocks'
     ]
   },
-  amd: { realtime: [], ignore: [] }
+  amd: { realtime: ['Average Graphics Package Power (W)'], ignore: [] }
 };
 
 export const setDashboardIfno = (obj: dashboardInfoState) => ({

@@ -199,6 +199,8 @@ export const DashboardItem: React.FC<DashboardItemProps> = ({
         splitLine: {
           show: false
         }
+        // min: 'dataMin',
+        // max: 'dataMax'
       },
       series: [
         {
