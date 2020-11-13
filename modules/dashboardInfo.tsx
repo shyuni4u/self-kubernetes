@@ -71,7 +71,29 @@ export const initialState: dashboardInfoState = {
       'Temperature (Sensor junction) (C)',
       'Temperature (Sensor mem) (C)'
     ],
-    ignore: []
+    ignore: [
+      'RLC SRLG firmware version',
+      'RLC SRLS firmware version',
+      'SDMA firmware version',
+      'SDMA2 firmware version',
+      'SMC firmware version',
+      'SOS firmware version',
+      'RLC SRLC firmware version',
+      'RLC firmware version',
+      'PFP firmware version',
+      'MEC2 firmware version',
+      'MEC firmware version',
+      'ME firmware version',
+      'MC firmware version',
+      'DMCU firmware version',
+      'CE firmware version',
+      'ASD firmware version',
+      'TA RAS firmware version',
+      'TA XGMI firmware version',
+      'UVD firmware version',
+      'VCE firmware version',
+      'VCN firmware version'
+    ]
   }
 };
 

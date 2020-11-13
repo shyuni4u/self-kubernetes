@@ -39,6 +39,21 @@ const StyledBody = styled.article`
   `}
 `;
 
+const StyledConnectionStatusWrapper = styled.div`
+  position: fixed;
+  display: flex;
+  bottom: 15px;
+  right: 15px;
+  color: #fff;
+  z-index: 1;
+`;
+const StyledConnectionStatus = styled.div`
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: 8px;
+`;
+
 const StyledList = styled.ul`
   display: flex;
   flex-wrap: wrap;
@@ -84,8 +99,25 @@ const StyledImportInput = styled.input`
 `;
 
 const amdApi = axios.create({
-  baseURL: auth['amd-ip'],
+  baseURL: auth['amd-ip2'],
   timeout: 5000
+});
+
+amdApi.interceptors.request.use((config) => {
+  config.params = { startTime: new Date() }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+amdApi.interceptors.response.use((response) => {
+  response.config.params.endTime = new Date()
+  response.config.params.duration = response.config.params.endTime - response.config.params.startTime
+  return response;
+}, (error) => {
+  error.config.params.endTime = new Date();
+  error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
+  return Promise.reject(error);
 });
 
 export const Dashboard: React.FC = () => {
@@ -95,6 +127,7 @@ export const Dashboard: React.FC = () => {
   const [importInfo, setImportInfo] = useState<string>('');
   const [amdGpuList, setAmdGpuList] = useState<string[]>([]);
   const [selectedGpu, setSelectedGpu] = useState<string>('ALL');
+  const [duration, setDuration] = useState<number>(-1);
 
   useEffect(() => {
     let unmount = false;
@@ -103,6 +136,7 @@ export const Dashboard: React.FC = () => {
         .get('/api')
         .then((response) => {
           if (unmount) return;
+          setDuration(response.config.params.duration);
           if (response.status === 200) {
             setResult(response);
             setAmdGpuList(Object.keys(response.data));
@@ -112,6 +146,7 @@ export const Dashboard: React.FC = () => {
         })
         .catch((error) => {
           if (unmount) return;
+          setDuration(-1)
           console.log('error', error);
         });
     };
@@ -209,6 +244,11 @@ export const Dashboard: React.FC = () => {
 
   return (
     <Wrapper>
+      <StyledConnectionStatusWrapper>
+        <StyledConnectionStatus style={{
+          backgroundColor: duration === -1 ? 'red' : 'green'
+        }}></StyledConnectionStatus> {duration === -1 ? '' : `${duration / 1000}s`}
+      </StyledConnectionStatusWrapper>
       {result && result.data && (
         <Fragment>
           <StyledHeader>
@@ -283,7 +323,7 @@ export const Dashboard: React.FC = () => {
           </StyledBody>
         </Fragment>
       )}
-      {!result && <span>Can't connect to server</span>}
+      {!result && <span>Loading ...</span>}
     </Wrapper>
   );
 };

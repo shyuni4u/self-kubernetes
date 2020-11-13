@@ -30,9 +30,7 @@ const StyledHeader = styled.header`
   `}
 `;
 const StyledBody = styled.article`
-  scroll-margin-top: 114px;
   margin-top: 114px;
-  margin-bottom: 10px;
   ${({ theme }) => theme.media.tablet`
     margin-top: 0;
   `}
@@ -71,6 +69,27 @@ const StyledList = styled.ul`
     flex-direction: column;
   `}
 `;
+const StyledPageButton = styled.button.attrs({
+  type: 'button'
+})`
+  line-height: 1.5;
+  font-weight: 400;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid #c77e19;
+  color: #f7b10a;
+  margin: 10px;
+  padding: 6px 15px;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:hover {
+    background: #b06601;
+    color: #ffd36b;
+    outline-width: 0;
+  }
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+`;
 const StyledImportInput = styled.input`
   background-color: #ddd;
   color: #333;
@@ -79,34 +98,9 @@ const StyledImportInput = styled.input`
   padding: 10px;
 `;
 
-const nvidiaApi = axios.create({
-  baseURL: auth['nvidia-ip'],
-  timeout: 5000
-});
 const amdApi = axios.create({
   baseURL: auth['amd-ip'],
   timeout: 5000
-});
-const amdApi2 = axios.create({
-  baseURL: auth['amd-ip2'],
-  timeout: 5000
-});
-
-nvidiaApi.interceptors.request.use((config) => {
-  config.params = { startTime: new Date() }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
-
-nvidiaApi.interceptors.response.use((response) => {
-  response.config.params.endTime = new Date()
-  response.config.params.duration = response.config.params.endTime - response.config.params.startTime
-  return response;
-}, (error) => {
-  error.config.params.endTime = new Date();
-  error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
-  return Promise.reject(error);
 });
 
 amdApi.interceptors.request.use((config) => {
@@ -126,87 +120,33 @@ amdApi.interceptors.response.use((response) => {
   return Promise.reject(error);
 });
 
-amdApi2.interceptors.request.use((config) => {
-  config.params = { startTime: new Date() }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
-
-amdApi2.interceptors.response.use((response) => {
-  response.config.params.endTime = new Date()
-  response.config.params.duration = response.config.params.endTime - response.config.params.startTime
-  return response;
-}, (error) => {
-  error.config.params.endTime = new Date();
-  error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
-  return Promise.reject(error);
-});
-
 export const Dashboard: React.FC = () => {
   const { dashboardInfo } = reducerDashboardInfo();
-  const [nvidiaResult, setNvidiaResult] = useState<any>(undefined);
-  const [amdResult, setAmdResult] = useState<any>(undefined);
-  const [amdResult2, setAmdResult2] = useState<any>(undefined);
+  const [result, setResult] = useState<any>(undefined);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [importInfo, setImportInfo] = useState<string>('');
   const [amdGpuList, setAmdGpuList] = useState<string[]>([]);
-  const [amdGpuList2, setAmdGpuList2] = useState<string[]>([]);
-  const [nvidiaDuration, setNvidiaDuration] = useState<number>(-1);
-  const [amdDuration, setAmdDuration] = useState<number>(-1);
-  const [amdDuration2, setAmdDuration2] = useState<number>(-1);
+  const [selectedGpu, setSelectedGpu] = useState<string>('ALL');
+  const [duration, setDuration] = useState<number>(-1);
 
   useEffect(() => {
     let unmount = false;
     const onLoadApi = async () => {
-      await nvidiaApi
-        .get('/api')
-        .then((response) => {
-          if (unmount) return;
-          setNvidiaDuration(response.config.params.duration);
-          if (response.status === 200) {
-            setNvidiaResult(response.data.nvidia_smi_log);
-          } else {
-            setNvidiaResult(undefined);
-          }
-        })
-        .catch((error) => {
-          if (unmount) return;
-          setNvidiaDuration(-1);
-          console.log('error', error);
-        });
       await amdApi
         .get('/api')
         .then((response) => {
           if (unmount) return;
+          setDuration(response.config.params.duration);
           if (response.status === 200) {
-            setAmdResult(response);
-            setAmdDuration(response.config.params.duration);
+            setResult(response);
             setAmdGpuList(Object.keys(response.data));
           } else {
-            setAmdResult(undefined);
+            setResult(undefined);
           }
         })
         .catch((error) => {
           if (unmount) return;
-          setAmdDuration(-1);
-          console.log('error', error);
-        });
-      await amdApi2
-        .get('/api')
-        .then((response) => {
-          if (unmount) return;
-          setAmdDuration2(response.config.params.duration);
-          if (response.status === 200) {
-            setAmdResult2(response);
-            setAmdGpuList2(Object.keys(response.data));
-          } else {
-            setAmdGpuList2(undefined);
-          }
-        })
-        .catch((error) => {
-          if (unmount) return;
-          setAmdDuration2(-1);
+          setDuration(-1)
           console.log('error', error);
         });
     };
@@ -224,34 +164,33 @@ export const Dashboard: React.FC = () => {
   const printAll = (
     jsonObject: any,
     edit: boolean,
-    gpu: string,
     refreshValue: number,
     depth: number = 0
   ) => {
     return Object.keys(jsonObject).map((key: string, index: number) => (
       <Fragment key={`${index}-${refreshValue}-${depth}-${edit}`}>
         {typeof jsonObject[key] === 'string' &&
-          (editMode || !dashboardInfo.get[gpu].ignore.includes(key)) && (
+          (editMode || !dashboardInfo.get['amd'].ignore.includes(key)) && (
             <DashboardItem
               title={key}
               value={jsonObject[key]}
               depth={depth}
-              gpu={gpu}
+              gpu={'amd'}
               edit={edit}
               refreshValue={refreshValue}
             ></DashboardItem>
           )}
         {typeof jsonObject[key] === 'object' &&
-          (editMode || !dashboardInfo.get[gpu].ignore.includes(key)) && (
+          (editMode || !dashboardInfo.get['amd'].ignore.includes(key)) && (
             <DashboardItem
               title={key}
               value={jsonObject[key]}
               depth={depth}
-              gpu={gpu}
+              gpu={'amd'}
               edit={edit}
               refreshValue={refreshValue}
             >
-              {printAll(jsonObject[key], edit, gpu, depth + 1)}
+              {printAll(jsonObject[key], edit, depth + 1)}
             </DashboardItem>
           )}
       </Fragment>
@@ -305,32 +244,37 @@ export const Dashboard: React.FC = () => {
 
   return (
     <Wrapper>
-      <StyledConnectionStatusWrapper style={{ bottom: '51px' }}>
-        <StyledConnectionStatus style={{
-          backgroundColor: nvidiaDuration === -1 ? 'red' : 'green'
-        }}></StyledConnectionStatus> NVIDIA (p100) {nvidiaDuration === -1 ? '' : `${nvidiaDuration / 1000}s`}
-      </StyledConnectionStatusWrapper>
-      <StyledConnectionStatusWrapper style={{ bottom: '33px' }}>
-        <StyledConnectionStatus style={{
-          backgroundColor: amdDuration === -1 ? 'red' : 'green'
-        }}></StyledConnectionStatus> AMD (rx51) {amdDuration === -1 ? '' : `${amdDuration / 1000}s`}
-      </StyledConnectionStatusWrapper>
       <StyledConnectionStatusWrapper>
         <StyledConnectionStatus style={{
-          backgroundColor: amdDuration2 === -1 ? 'red' : 'green'
-        }}></StyledConnectionStatus> AMD (rx52) {amdDuration2 === -1 ? '' : `${amdDuration2 / 1000}s`}
+          backgroundColor: duration === -1 ? 'red' : 'green'
+        }}></StyledConnectionStatus> {duration === -1 ? '' : `${duration / 1000}s`}
       </StyledConnectionStatusWrapper>
-      {nvidiaResult && nvidiaResult.cuda_version === '10.2' && (
+      {result && result.data && (
         <Fragment>
           <StyledHeader>
             <StyledList>
               <li>
-                <a href={'#nvidia'}>
-                  <Button>NVIDIA</Button>
-                </a>
-                <a href={'#amd'}>
-                  <Button>AMD</Button>
-                </a>
+                {amdGpuList.map((gpuEl: any, gpuIndex: number) => (
+                  <StyledPageButton
+                    key={gpuIndex}
+                    style={{
+                      backgroundColor: gpuEl === selectedGpu ? '#b06601' : '',
+                      color: gpuEl === selectedGpu ? '#ffd36b' : ''
+                    }}
+                    onClick={() => setSelectedGpu(gpuEl)}
+                  >
+                    {gpuEl}
+                  </StyledPageButton>
+                ))}
+                <StyledPageButton
+                  style={{
+                    backgroundColor: selectedGpu === 'ALL' ? '#b06601' : '',
+                    color: selectedGpu === 'ALL' ? '#ffd36b' : ''
+                  }}
+                  onClick={() => setSelectedGpu('ALL')}
+                >
+                  ALL
+                </StyledPageButton>
               </li>
               <li>
                 <Button
@@ -350,74 +294,36 @@ export const Dashboard: React.FC = () => {
               onChange={(e) => setImportInfo(e.target.value)}
             />
           </StyledHeader>
-          <StyledBody id={'nvidia'}>
+          <StyledBody>
             <Fragment>
-              {nvidiaResult.gpu.map((gpuEl, gpuIndex) => (
-                <Panel key={gpuIndex}>
-                  <h2 className={'panel-title'}>
-                    GPU {gpuIndex + 1} : {gpuEl.id}
-                  </h2>
+              {selectedGpu !== 'ALL' && result && result.data && (
+                <Panel>
+                  <h2 className={'panel-title'}>{selectedGpu}</h2>
                   <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                    {printAll(gpuEl, editMode, 'nvidia', gpuIndex)}
+                    {printAll(
+                      result.data[selectedGpu],
+                      editMode,
+                      amdGpuList.indexOf(selectedGpu)
+                    )}
                   </div>
                 </Panel>
-              ))}
-            </Fragment>
-          </StyledBody>
-
-          <article id={'amd'} style={{ scrollMarginTop: '114px' }}>
-            <Fragment>
-              {amdResult &&
-                amdResult.data &&
+              )}
+              {selectedGpu === 'ALL' &&
+                result &&
+                result.data &&
                 amdGpuList.map((gpuEl, gpuIndex) => (
                   <Panel key={gpuIndex}>
                     <h2 className={'panel-title'}>GPU: {gpuEl}</h2>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                      {printAll(
-                        amdResult.data[gpuEl],
-                        editMode,
-                        'amd',
-                        gpuIndex
-                      )}
+                      {printAll(result.data[gpuEl], editMode, gpuIndex)}
                     </div>
                   </Panel>
                 ))}
             </Fragment>
-          </article>
-
-          <article>
-            <Fragment>
-              {amdResult2 &&
-                amdResult2.data &&
-                amdGpuList2.map((gpuEl, gpuIndex) => (
-                  <Panel key={gpuIndex}>
-                    <h2 className={'panel-title'}>GPU: {gpuEl}</h2>
-                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                      {printAll(
-                        amdResult2.data[gpuEl],
-                        editMode,
-                        'amd',
-                        gpuIndex
-                      )}
-                    </div>
-                  </Panel>
-                ))}
-            </Fragment>
-          </article>
+          </StyledBody>
         </Fragment>
       )}
-      {!nvidiaResult && (
-        <span>
-          Can't connect to nvidia server
-          <br />
-        </span>
-      )}
-      {!amdResult && (
-        <span>
-          Can't connect to amd server
-          <br />
-        </span>
-      )}
+      {!result && <span>Loading ...</span>}
     </Wrapper>
   );
 };

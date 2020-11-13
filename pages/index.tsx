@@ -32,30 +32,37 @@ export const Index: React.FC = () => {
   };
   const nvidia: TodoProps = {
     title: 'NVIDIA',
-    subtitle: 'Nvidia-smi (p100)',
+    subtitle: 'dashboard (nvidia-smi)',
     items: [
       {
-        name: 'dashboard',
+        name: 'p100',
         link: 'nvidia/dashboard'
       }
     ]
   };
   const amd: TodoProps = {
     title: 'AMD',
-    subtitle: 'Rocm-smi (rx51)',
+    subtitle: 'dashboard (rocm-smi)',
     items: [
       {
-        name: 'dashboard',
-        link: 'amd/dashboard'
+        name: 'rx51',
+        link: 'amd/dashboard1'
+      },
+      {
+        name: 'rx52',
+        link: 'amd/dashboard2'
       }
     ]
   };
   const etc: TodoProps = {
-    title: 'TOTAL',
-    subtitle: 'p100 + rx51',
+    title: 'DASHBOARD',
     items: [
+      // {
+      //   name: 'manual',
+      //   link: 'total/manual'
+      // },
       {
-        name: 'dashboard',
+        name: 'p100 + rx51 + rx52',
         link: 'total/dashboard'
       }
     ]
