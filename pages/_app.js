@@ -48,6 +48,7 @@ export class RootApp extends App {
       <>
         <Head>
           <title>Moreh - Dashboard</title>
+          <link rel="shortcut icon" href="/favicon.ico" />
         </Head>
         <div style={styles.layout}>
           <main style={styles.main}>
