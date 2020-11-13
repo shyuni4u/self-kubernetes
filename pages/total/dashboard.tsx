@@ -408,13 +408,19 @@ export const Dashboard: React.FC = () => {
       )}
       {!nvidiaResult && (
         <span>
-          Can't connect to nvidia server
+          Loading ...
           <br />
         </span>
       )}
       {!amdResult && (
         <span>
-          Can't connect to amd server
+          Loading ...
+          <br />
+        </span>
+      )}
+      {!amdResult2 && (
+        <span>
+          Loading ...
           <br />
         </span>
       )}

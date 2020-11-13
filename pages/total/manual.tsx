@@ -67,7 +67,7 @@ export const Manual: React.FC = () => {
   const { dashboardInfo } = reducerDashboardInfo();
   const [editMode, setEditMode] = useState<boolean>(true);
   const [importInfo, setImportInfo] = useState<string>('');
-  const amdGpuList = Object.keys(dummy)
+  const amdGpuList = Object.keys(dummy);
 
   const printAll = (
     jsonObject: any,
@@ -153,54 +153,52 @@ export const Manual: React.FC = () => {
 
   return (
     <Wrapper>
-      <Fragment>
-        <StyledHeader>
-          <StyledList>
-            <li>
-              <a href={'#nvidia'}>
-                <Button>NVIDIA</Button>
-              </a>
-              <a href={'#amd'}>
-                <Button>AMD</Button>
-              </a>
-            </li>
-            <li>
-              <Button
-                primary={editMode}
-                onClick={() => setEditMode((prev) => !prev)}
-              >
-                {editMode ? 'edit' : 'readonly'}
-              </Button>
-              <Button onClick={() => doImport()}>Import</Button>
-              <Button onClick={() => doExport()}>Export</Button>
-            </li>
-          </StyledList>
-          <StyledImportInput
-            type="text"
-            placeholder={'Import json: '}
-            value={importInfo}
-            onChange={(e) => setImportInfo(e.target.value)}
-          />
-        </StyledHeader>
+      <StyledHeader>
+        <StyledList>
+          <li>
+            <a href={'#nvidia'}>
+              <Button>NVIDIA</Button>
+            </a>
+            <a href={'#amd'}>
+              <Button>AMD</Button>
+            </a>
+          </li>
+          <li>
+            <Button
+              primary={editMode}
+              onClick={() => setEditMode((prev) => !prev)}
+            >
+              {editMode ? 'edit' : 'readonly'}
+            </Button>
+            <Button onClick={() => doImport()}>Import</Button>
+            <Button onClick={() => doExport()}>Export</Button>
+          </li>
+        </StyledList>
+        <StyledImportInput
+          type="text"
+          placeholder={'Import json: '}
+          value={importInfo}
+          onChange={(e) => setImportInfo(e.target.value)}
+        />
+      </StyledHeader>
 
-        <StyledBody id={'amd'} style={{ scrollMarginTop: '114px' }}>
-          <Fragment>
-            {amdGpuList.map((gpuEl, gpuIndex) => (
-              <Panel key={gpuIndex}>
-                <h2 className={'panel-title'}>GPU: {gpuEl}</h2>
-                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                  {printAll(
-                    dummy[gpuEl],
-                    editMode,
-                    'amd',
-                    gpuIndex
-                  )}
-                </div>
-              </Panel>
-            ))}
-          </Fragment>
-        </StyledBody>
-      </Fragment>
+      <StyledBody id={'amd'} style={{ scrollMarginTop: '114px' }}>
+        <Fragment>
+          {amdGpuList.map((gpuEl, gpuIndex) => (
+            <Panel key={gpuIndex}>
+              <h2 className={'panel-title'}>GPU: {gpuEl}</h2>
+              <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                {printAll(
+                  dummy[gpuEl],
+                  editMode,
+                  'amd',
+                  gpuIndex
+                )}
+              </div>
+            </Panel>
+          ))}
+        </Fragment>
+      </StyledBody>
     </Wrapper>
   );
 };
