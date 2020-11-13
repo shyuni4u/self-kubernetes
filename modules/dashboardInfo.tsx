@@ -69,7 +69,8 @@ export const initialState: dashboardInfoState = {
       'Average Graphics Package Power (W)',
       'Temperature (Sensor edge) (C)',
       'Temperature (Sensor junction) (C)',
-      'Temperature (Sensor mem) (C)'
+      'Temperature (Sensor mem) (C)',
+      'For Manual'
     ],
     ignore: [
       'RLC SRLG firmware version',
@@ -113,10 +114,7 @@ type actions = {
   type: string;
 } & dashboardInfoState;
 
-const reducer = (
-  state: dashboardInfoState = initialState,
-  action: actions
-): dashboardInfoState | undefined => {
+const reducer = (state: dashboardInfoState = initialState, action: actions): dashboardInfoState | undefined => {
   switch (action.type) {
     case DASHBOARD_INFO_SET:
       return {

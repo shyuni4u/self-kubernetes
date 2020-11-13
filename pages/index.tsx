@@ -57,10 +57,10 @@ export const Index: React.FC = () => {
   const etc: TodoProps = {
     title: 'DASHBOARD',
     items: [
-      // {
-      //   name: 'manual',
-      //   link: 'total/manual'
-      // },
+      {
+        name: 'manual',
+        link: 'total/manual'
+      },
       {
         name: 'p100 + rx51 + rx52',
         link: 'total/dashboard'
