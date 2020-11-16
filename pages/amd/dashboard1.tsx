@@ -135,7 +135,6 @@ export const Dashboard: React.FC = () => {
   const [amdGpuList, setAmdGpuList] = useState<string[]>([]);
   const [selectedGpu, setSelectedGpu] = useState<string>('ALL');
   const [duration, setDuration] = useState<number>(-1);
-  const [latency, setLatency] = useState<number>(-1);
 
   useEffect(() => {
     let unmount = false;
@@ -147,8 +146,7 @@ export const Dashboard: React.FC = () => {
           setDuration(response.config.params.duration);
           if (response.status === 200) {
             setResult(response);
-            setLatency(response.data.commandDelay);
-            setAmdGpuList(Object.keys(response.data.smiResult));
+            setAmdGpuList(Object.keys(response.data));
           } else {
             setResult(undefined);
           }
@@ -252,7 +250,7 @@ export const Dashboard: React.FC = () => {
             backgroundColor: duration === -1 ? 'red' : 'green'
           }}
         ></StyledConnectionStatus>{' '}
-        {duration === -1 ? '' : `${duration / 1000}s`} ({latency === -1 ? '' : `${latency / 1000}s`})
+        {duration === -1 ? '' : `${duration / 1000}s`}
       </StyledConnectionStatusWrapper>
       {result && result.data && (
         <Fragment>
@@ -298,11 +296,11 @@ export const Dashboard: React.FC = () => {
           </StyledHeader>
           <StyledBody>
             <Fragment>
-              {selectedGpu !== 'ALL' && result && result.data.smiResult && (
+              {selectedGpu !== 'ALL' && result && result.data && (
                 <Panel>
                   <h2 className={'panel-title'}>{selectedGpu}</h2>
                   <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                    {printAll(result.data.smiResult[selectedGpu], editMode, amdGpuList.indexOf(selectedGpu))}
+                    {printAll(result.data[selectedGpu], editMode, amdGpuList.indexOf(selectedGpu))}
                   </div>
                 </Panel>
               )}
@@ -313,7 +311,7 @@ export const Dashboard: React.FC = () => {
                   <Panel key={gpuIndex}>
                     <h2 className={'panel-title'}>GPU: {gpuEl}</h2>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                      {printAll(result.data.smiResult[gpuEl], editMode, gpuIndex)}
+                      {printAll(result.data[gpuEl], editMode, gpuIndex)}
                     </div>
                   </Panel>
                 ))}

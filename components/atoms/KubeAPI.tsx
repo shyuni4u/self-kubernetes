@@ -1,5 +1,5 @@
 import axios from 'axios';
-import auth from '../../.env/auth.json'
+import auth from '../../.env/auth.json';
 
 const token = auth.token;
 
@@ -15,7 +15,7 @@ const token = auth.token;
 export default axios.create({
   // baseURL: 'http://localhost:9999',
   // baseURL: 'https://searchconsole.googleapis.com/$discovery/rest?version=v1'
-  baseURL: 'https://10.96.8.208:6443',
+  baseURL: auth['kubernetes-ip'],
   headers: {
     authorization: `Bearer ${token}`
   }

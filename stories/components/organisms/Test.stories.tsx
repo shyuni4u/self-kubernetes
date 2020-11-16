@@ -12,7 +12,7 @@ export default {
 
 const Template: Story = (args) => (
   <Wrapper>
-    <Test />
+    <Test {...args} />
   </Wrapper>
 );
 

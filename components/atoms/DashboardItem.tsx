@@ -12,7 +12,7 @@ export type DashboardItemProps = {
    */
   style?: CSSProperties;
   /**
-   * Is primary
+   * Child depth
    */
   depth?: number;
   /**
@@ -26,11 +26,11 @@ export type DashboardItemProps = {
   /**
    * Value
    */
-  value: string;
+  value: string & DashboardItemProps;
   /**
    * GPU type
    */
-  gpu: string;
+  gpu: 'amd' | 'nvidia';
   /**
    * Edit mode
    */
@@ -75,7 +75,6 @@ const CHART_X_SIZE = 100;
  */
 export const DashboardItem: React.FC<DashboardItemProps> = ({
   style = {},
-  depth = 0,
   title = '',
   subtitle = undefined,
   value = undefined,
