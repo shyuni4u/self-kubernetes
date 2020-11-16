@@ -26,7 +26,7 @@ export type DashboardItemProps = {
   /**
    * Value
    */
-  value: string & DashboardItemProps;
+  value: any;
   /**
    * GPU type
    */

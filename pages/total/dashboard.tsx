@@ -246,7 +246,7 @@ export const Dashboard: React.FC = () => {
     };
   }, []);
 
-  const printAll = (jsonObject: any, edit: boolean, gpu: string, refreshValue: number, depth: number = 0) => {
+  const printAll = (jsonObject: any, edit: boolean, gpu: 'amd' | 'nvidia', refreshValue: number, depth: number = 0) => {
     return Object.keys(jsonObject).map((key: string, index: number) => (
       <Fragment key={`${index}-${refreshValue}-${depth}-${edit}`}>
         {typeof jsonObject[key] === 'string' && (editMode || !dashboardInfo.get[gpu].ignore.includes(key)) && (
