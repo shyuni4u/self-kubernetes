@@ -6,20 +6,28 @@ const app = express();
 const port = 35100;
 
 app.get('/test', (req, res) => {
-  shell.exec('ls', (code, stdout, stderr) => {
-    res.send(stdout);
-  });
+  res.send('network speed test');
 });
 
 app.get('/api', (req, res) => {
+  const startTime = new Date();
   shell.exec('rocm-smi -a --json', (code, stdout, stderr) => {
-    res.send(stdout);
+    const rs = {
+      commandDelay: new Date() - startTime,
+      smiResult: JSON.parse(stdout)
+    }
+    res.send(rs);
   });
 });
 
 // app.get('/api', (req, res) => {
+//   const startTime = new Date();
 //   shell.exec('nvidia-smi -x -q', (code, stdout, stderr) => {
-//     res.send(xml2json.toJson(stdout));
+//     const rs = {
+//       commandDelay: new Date() - startTime,
+//       smiResult: JSON.parse(xml2json.toJson(stdout))
+//     }
+//     res.send(rs);
 //   });
 // });
 

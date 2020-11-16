@@ -15,7 +15,7 @@ const StyledList = styled.ul`
       border-top: 1px dotted orange;
     }
     & > div:first-child {
-      width: 300px;
+      width: 400px;
     }
     & > div:last-child > pre {
       margin-bottom: 10px;
@@ -111,10 +111,10 @@ export const Manual: React.FC = () => {
           <div>
             <StyledConnectionStatusWrapper>
               <StyledConnectionStatus style={{ backgroundColor: 'green' }}></StyledConnectionStatus> GPU (SERVER-NAME)
-              0.042s
+              0.042s (0.017s)
             </StyledConnectionStatusWrapper>
           </div>
-          <div>GPU 종류 (서버명) API 응답시간</div>
+          <div>GPU 종류 (서버명) API 응답시간 (COMMAND 수행 시간)</div>
         </li>
         <li>
           <div>

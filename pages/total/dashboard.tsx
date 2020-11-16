@@ -174,6 +174,9 @@ export const Dashboard: React.FC = () => {
   const [nvidiaDuration, setNvidiaDuration] = useState<number>(-1);
   const [amdDuration, setAmdDuration] = useState<number>(-1);
   const [amdDuration2, setAmdDuration2] = useState<number>(-1);
+  const [nvidiaLatency, setNvidiaLatency] = useState<number>(-1);
+  const [amdLatency, setAmdLatency] = useState<number>(-1);
+  const [amdLatency2, setAmdLatency2] = useState<number>(-1);
 
   useEffect(() => {
     let unmount = false;
@@ -184,7 +187,8 @@ export const Dashboard: React.FC = () => {
           if (unmount) return;
           setNvidiaDuration(response.config.params.duration);
           if (response.status === 200) {
-            setNvidiaResult(response.data.nvidia_smi_log);
+            setNvidiaLatency(response.data.commandDelay);
+            setNvidiaResult(response.data.smiResult.nvidia_smi_log);
           } else {
             setNvidiaResult(undefined);
           }
@@ -198,10 +202,11 @@ export const Dashboard: React.FC = () => {
         .get('/api')
         .then((response) => {
           if (unmount) return;
+          setAmdDuration(response.config.params.duration);
           if (response.status === 200) {
             setAmdResult(response);
-            setAmdDuration(response.config.params.duration);
-            setAmdGpuList(Object.keys(response.data));
+            setAmdLatency(response.data.commandDelay);
+            setAmdGpuList(Object.keys(response.data.smiResult));
           } else {
             setAmdResult(undefined);
           }
@@ -218,7 +223,8 @@ export const Dashboard: React.FC = () => {
           setAmdDuration2(response.config.params.duration);
           if (response.status === 200) {
             setAmdResult2(response);
-            setAmdGpuList2(Object.keys(response.data));
+            setAmdLatency2(response.data.commandDelay);
+            setAmdGpuList2(Object.keys(response.data.smiResult));
           } else {
             setAmdGpuList2(undefined);
           }
@@ -232,7 +238,7 @@ export const Dashboard: React.FC = () => {
 
     const interval = setInterval(() => {
       onLoadApi();
-    }, 1000);
+    }, 1 * 1000);
 
     return () => {
       unmount = true;
@@ -322,7 +328,7 @@ export const Dashboard: React.FC = () => {
             backgroundColor: nvidiaDuration === -1 ? 'red' : 'green'
           }}
         ></StyledConnectionStatus>{' '}
-        NVIDIA (p100) {nvidiaDuration === -1 ? '' : `${nvidiaDuration / 1000}s`}
+        NVIDIA (p100) {nvidiaDuration === -1 ? '' : `${nvidiaDuration / 1000}s`} ({nvidiaLatency === -1 ? '' : `${nvidiaLatency / 1000}s`})
       </StyledConnectionStatusWrapper>
       <StyledConnectionStatusWrapper style={{ bottom: '33px' }}>
         <StyledConnectionStatus
@@ -330,7 +336,7 @@ export const Dashboard: React.FC = () => {
             backgroundColor: amdDuration === -1 ? 'red' : 'green'
           }}
         ></StyledConnectionStatus>{' '}
-        AMD (rx51) {amdDuration === -1 ? '' : `${amdDuration / 1000}s`}
+        AMD (rx51) {amdDuration === -1 ? '' : `${amdDuration / 1000}s`} ({amdLatency === -1 ? '' : `${amdLatency / 1000}s`})
       </StyledConnectionStatusWrapper>
       <StyledConnectionStatusWrapper>
         <StyledConnectionStatus
@@ -338,7 +344,7 @@ export const Dashboard: React.FC = () => {
             backgroundColor: amdDuration2 === -1 ? 'red' : 'green'
           }}
         ></StyledConnectionStatus>{' '}
-        AMD (rx52) {amdDuration2 === -1 ? '' : `${amdDuration2 / 1000}s`}
+        AMD (rx52) {amdDuration2 === -1 ? '' : `${amdDuration2 / 1000}s`} ({amdLatency2 === -1 ? '' : `${amdLatency2 / 1000}s`})
       </StyledConnectionStatusWrapper>
       {nvidiaResult && nvidiaResult.cuda_version === '10.2' && (
         <Fragment>
@@ -390,7 +396,7 @@ export const Dashboard: React.FC = () => {
                   <Panel key={gpuIndex}>
                     <h2 className={'panel-title'}>GPU: {gpuEl}</h2>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                      {printAll(amdResult.data[gpuEl], editMode, 'amd', gpuIndex)}
+                      {printAll(amdResult.data.smiResult[gpuEl], editMode, 'amd', gpuIndex)}
                     </div>
                   </Panel>
                 ))}
@@ -405,7 +411,7 @@ export const Dashboard: React.FC = () => {
                   <Panel key={gpuIndex}>
                     <h2 className={'panel-title'}>GPU: {gpuEl}</h2>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                      {printAll(amdResult2.data[gpuEl], editMode, 'amd', gpuIndex)}
+                      {printAll(amdResult2.data.smiResult[gpuEl], editMode, 'amd', gpuIndex)}
                     </div>
                   </Panel>
                 ))}

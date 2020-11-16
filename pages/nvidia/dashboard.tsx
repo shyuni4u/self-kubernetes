@@ -134,6 +134,7 @@ export const Dashboard: React.FC = () => {
   const [importInfo, setImportInfo] = useState<string>('');
   const [selectedGpu, setSelectedGpu] = useState<number>(-1);
   const [duration, setDuration] = useState<number>(-1);
+  const [latency, setLatency] = useState<number>(-1);
 
   useEffect(() => {
     let unmount = false;
@@ -144,7 +145,8 @@ export const Dashboard: React.FC = () => {
           if (unmount) return;
           setDuration(response.config.params.duration);
           if (response.status === 200) {
-            setResult(response.data.nvidia_smi_log);
+            setLatency(response.data.commandDelay);
+            setResult(response.data.smiResult.nvidia_smi_log);
           } else {
             setResult(undefined);
           }
@@ -248,7 +250,7 @@ export const Dashboard: React.FC = () => {
             backgroundColor: duration === -1 ? 'red' : 'green'
           }}
         ></StyledConnectionStatus>{' '}
-        {duration === -1 ? '' : `${duration / 1000}s`}
+        {duration === -1 ? '' : `${duration / 1000}s`} ({latency === -1 ? '' : `${latency / 1000}s`})
       </StyledConnectionStatusWrapper>
       {result && result.cuda_version === '10.2' && (
         <Fragment>
