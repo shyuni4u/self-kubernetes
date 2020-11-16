@@ -31,9 +31,9 @@ const StyledImportInput = styled.input`
 `;
 const StyledConnectionStatusWrapper = styled.div`
   display: flex;
-  align-items: center;
   padding: 10px;
   color: #fff;
+  align-items: center;
   z-index: 1;
 `;
 const StyledConnectionStatus = styled.div`

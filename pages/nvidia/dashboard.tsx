@@ -42,6 +42,7 @@ const StyledBody = styled.article`
 const StyledConnectionStatusWrapper = styled.div`
   position: fixed;
   display: flex;
+  align-items: center;
   bottom: 15px;
   right: 15px;
   color: #fff;
@@ -103,22 +104,28 @@ const nvidiaApi = axios.create({
   timeout: 5000
 });
 
-nvidiaApi.interceptors.request.use((config) => {
-  config.params = { startTime: new Date() }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+nvidiaApi.interceptors.request.use(
+  (config) => {
+    config.params = { startTime: new Date() };
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-nvidiaApi.interceptors.response.use((response) => {
-  response.config.params.endTime = new Date()
-  response.config.params.duration = response.config.params.endTime - response.config.params.startTime
-  return response;
-}, (error) => {
-  error.config.params.endTime = new Date();
-  error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
-  return Promise.reject(error);
-});
+nvidiaApi.interceptors.response.use(
+  (response) => {
+    response.config.params.endTime = new Date();
+    response.config.params.duration = response.config.params.endTime - response.config.params.startTime;
+    return response;
+  },
+  (error) => {
+    error.config.params.endTime = new Date();
+    error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
+    return Promise.reject(error);
+  }
+);
 
 export const Dashboard: React.FC = () => {
   const { dashboardInfo } = reducerDashboardInfo();
@@ -144,7 +151,7 @@ export const Dashboard: React.FC = () => {
         })
         .catch((error) => {
           if (unmount) return;
-          setDuration(-1)
+          setDuration(-1);
           console.log('error', error);
         });
     };
@@ -159,38 +166,31 @@ export const Dashboard: React.FC = () => {
     };
   }, []);
 
-  const printAll = (
-    jsonObject: any,
-    edit: boolean,
-    refreshValue: number,
-    depth: number = 0
-  ) => {
+  const printAll = (jsonObject: any, edit: boolean, refreshValue: number, depth: number = 0) => {
     return Object.keys(jsonObject).map((key: string, index: number) => (
       <Fragment key={`${index}-${refreshValue}-${depth}-${edit}`}>
-        {typeof jsonObject[key] === 'string' &&
-          (editMode || !dashboardInfo.get['nvidia'].ignore.includes(key)) && (
-            <DashboardItem
-              title={key}
-              value={jsonObject[key]}
-              depth={depth}
-              gpu={'nvidia'}
-              edit={edit}
-              refreshValue={refreshValue}
-            ></DashboardItem>
-          )}
-        {typeof jsonObject[key] === 'object' &&
-          (editMode || !dashboardInfo.get['nvidia'].ignore.includes(key)) && (
-            <DashboardItem
-              title={key}
-              value={jsonObject[key]}
-              depth={depth}
-              gpu={'nvidia'}
-              edit={edit}
-              refreshValue={refreshValue}
-            >
-              {printAll(jsonObject[key], edit, depth + 1)}
-            </DashboardItem>
-          )}
+        {typeof jsonObject[key] === 'string' && (editMode || !dashboardInfo.get['nvidia'].ignore.includes(key)) && (
+          <DashboardItem
+            title={key}
+            value={jsonObject[key]}
+            depth={depth}
+            gpu={'nvidia'}
+            edit={edit}
+            refreshValue={refreshValue}
+          ></DashboardItem>
+        )}
+        {typeof jsonObject[key] === 'object' && (editMode || !dashboardInfo.get['nvidia'].ignore.includes(key)) && (
+          <DashboardItem
+            title={key}
+            value={jsonObject[key]}
+            depth={depth}
+            gpu={'nvidia'}
+            edit={edit}
+            refreshValue={refreshValue}
+          >
+            {printAll(jsonObject[key], edit, depth + 1)}
+          </DashboardItem>
+        )}
       </Fragment>
     ));
   };
@@ -243,9 +243,12 @@ export const Dashboard: React.FC = () => {
   return (
     <Wrapper>
       <StyledConnectionStatusWrapper>
-        <StyledConnectionStatus style={{
-          backgroundColor: duration === -1 ? 'red' : 'green'
-        }}></StyledConnectionStatus> {duration === -1 ? '' : `${duration / 1000}s`}
+        <StyledConnectionStatus
+          style={{
+            backgroundColor: duration === -1 ? 'red' : 'green'
+          }}
+        ></StyledConnectionStatus>{' '}
+        {duration === -1 ? '' : `${duration / 1000}s`}
       </StyledConnectionStatusWrapper>
       {result && result.cuda_version === '10.2' && (
         <Fragment>
@@ -256,8 +259,7 @@ export const Dashboard: React.FC = () => {
                   <StyledPageButton
                     key={gpuIndex}
                     style={{
-                      backgroundColor:
-                        gpuIndex === selectedGpu ? '#b06601' : '',
+                      backgroundColor: gpuIndex === selectedGpu ? '#b06601' : '',
                       color: gpuIndex === selectedGpu ? '#ffd36b' : ''
                     }}
                     onClick={() => setSelectedGpu(gpuIndex)}
@@ -280,10 +282,7 @@ export const Dashboard: React.FC = () => {
               <li>driver_version: {result.driver_version}</li>
               <li>timestamp: {result.timestamp}</li>
               <li>
-                <Button
-                  primary={editMode}
-                  onClick={() => setEditMode((prev) => !prev)}
-                >
+                <Button primary={editMode} onClick={() => setEditMode((prev) => !prev)}>
                   {editMode ? 'edit' : 'readonly'}
                 </Button>
                 <Button onClick={() => doImport()}>Import</Button>
@@ -315,9 +314,7 @@ export const Dashboard: React.FC = () => {
                     <h2 className={'panel-title'}>
                       GPU {gpuIndex + 1} : {gpuEl.id}
                     </h2>
-                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                      {printAll(gpuEl, editMode, gpuIndex)}
-                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>{printAll(gpuEl, editMode, gpuIndex)}</div>
                   </Panel>
                 ))}
             </Fragment>

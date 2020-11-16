@@ -47,6 +47,7 @@ const StyledConnectionStatusWrapper = styled.div`
   bottom: 15px;
   right: 15px;
   color: #fff;
+  align-items: center;
   z-index: 1;
 `;
 const StyledConnectionStatus = styled.div`
@@ -92,56 +93,74 @@ const amdApi2 = axios.create({
   timeout: 5000
 });
 
-nvidiaApi.interceptors.request.use((config) => {
-  config.params = { startTime: new Date() }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+nvidiaApi.interceptors.request.use(
+  (config) => {
+    config.params = { startTime: new Date() };
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-nvidiaApi.interceptors.response.use((response) => {
-  response.config.params.endTime = new Date()
-  response.config.params.duration = response.config.params.endTime - response.config.params.startTime
-  return response;
-}, (error) => {
-  error.config.params.endTime = new Date();
-  error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
-  return Promise.reject(error);
-});
+nvidiaApi.interceptors.response.use(
+  (response) => {
+    response.config.params.endTime = new Date();
+    response.config.params.duration = response.config.params.endTime - response.config.params.startTime;
+    return response;
+  },
+  (error) => {
+    error.config.params.endTime = new Date();
+    error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
+    return Promise.reject(error);
+  }
+);
 
-amdApi.interceptors.request.use((config) => {
-  config.params = { startTime: new Date() }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+amdApi.interceptors.request.use(
+  (config) => {
+    config.params = { startTime: new Date() };
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-amdApi.interceptors.response.use((response) => {
-  response.config.params.endTime = new Date()
-  response.config.params.duration = response.config.params.endTime - response.config.params.startTime
-  return response;
-}, (error) => {
-  error.config.params.endTime = new Date();
-  error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
-  return Promise.reject(error);
-});
+amdApi.interceptors.response.use(
+  (response) => {
+    response.config.params.endTime = new Date();
+    response.config.params.duration = response.config.params.endTime - response.config.params.startTime;
+    return response;
+  },
+  (error) => {
+    error.config.params.endTime = new Date();
+    error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
+    return Promise.reject(error);
+  }
+);
 
-amdApi2.interceptors.request.use((config) => {
-  config.params = { startTime: new Date() }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+amdApi2.interceptors.request.use(
+  (config) => {
+    config.params = { startTime: new Date() };
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-amdApi2.interceptors.response.use((response) => {
-  response.config.params.endTime = new Date()
-  response.config.params.duration = response.config.params.endTime - response.config.params.startTime
-  return response;
-}, (error) => {
-  error.config.params.endTime = new Date();
-  error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
-  return Promise.reject(error);
-});
+amdApi2.interceptors.response.use(
+  (response) => {
+    response.config.params.endTime = new Date();
+    response.config.params.duration = response.config.params.endTime - response.config.params.startTime;
+    return response;
+  },
+  (error) => {
+    error.config.params.endTime = new Date();
+    error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
+    return Promise.reject(error);
+  }
+);
 
 export const Dashboard: React.FC = () => {
   const { dashboardInfo } = reducerDashboardInfo();
@@ -221,39 +240,31 @@ export const Dashboard: React.FC = () => {
     };
   }, []);
 
-  const printAll = (
-    jsonObject: any,
-    edit: boolean,
-    gpu: string,
-    refreshValue: number,
-    depth: number = 0
-  ) => {
+  const printAll = (jsonObject: any, edit: boolean, gpu: string, refreshValue: number, depth: number = 0) => {
     return Object.keys(jsonObject).map((key: string, index: number) => (
       <Fragment key={`${index}-${refreshValue}-${depth}-${edit}`}>
-        {typeof jsonObject[key] === 'string' &&
-          (editMode || !dashboardInfo.get[gpu].ignore.includes(key)) && (
-            <DashboardItem
-              title={key}
-              value={jsonObject[key]}
-              depth={depth}
-              gpu={gpu}
-              edit={edit}
-              refreshValue={refreshValue}
-            ></DashboardItem>
-          )}
-        {typeof jsonObject[key] === 'object' &&
-          (editMode || !dashboardInfo.get[gpu].ignore.includes(key)) && (
-            <DashboardItem
-              title={key}
-              value={jsonObject[key]}
-              depth={depth}
-              gpu={gpu}
-              edit={edit}
-              refreshValue={refreshValue}
-            >
-              {printAll(jsonObject[key], edit, gpu, depth + 1)}
-            </DashboardItem>
-          )}
+        {typeof jsonObject[key] === 'string' && (editMode || !dashboardInfo.get[gpu].ignore.includes(key)) && (
+          <DashboardItem
+            title={key}
+            value={jsonObject[key]}
+            depth={depth}
+            gpu={gpu}
+            edit={edit}
+            refreshValue={refreshValue}
+          ></DashboardItem>
+        )}
+        {typeof jsonObject[key] === 'object' && (editMode || !dashboardInfo.get[gpu].ignore.includes(key)) && (
+          <DashboardItem
+            title={key}
+            value={jsonObject[key]}
+            depth={depth}
+            gpu={gpu}
+            edit={edit}
+            refreshValue={refreshValue}
+          >
+            {printAll(jsonObject[key], edit, gpu, depth + 1)}
+          </DashboardItem>
+        )}
       </Fragment>
     ));
   };
@@ -306,19 +317,28 @@ export const Dashboard: React.FC = () => {
   return (
     <Wrapper>
       <StyledConnectionStatusWrapper style={{ bottom: '51px' }}>
-        <StyledConnectionStatus style={{
-          backgroundColor: nvidiaDuration === -1 ? 'red' : 'green'
-        }}></StyledConnectionStatus> NVIDIA (p100) {nvidiaDuration === -1 ? '' : `${nvidiaDuration / 1000}s`}
+        <StyledConnectionStatus
+          style={{
+            backgroundColor: nvidiaDuration === -1 ? 'red' : 'green'
+          }}
+        ></StyledConnectionStatus>{' '}
+        NVIDIA (p100) {nvidiaDuration === -1 ? '' : `${nvidiaDuration / 1000}s`}
       </StyledConnectionStatusWrapper>
       <StyledConnectionStatusWrapper style={{ bottom: '33px' }}>
-        <StyledConnectionStatus style={{
-          backgroundColor: amdDuration === -1 ? 'red' : 'green'
-        }}></StyledConnectionStatus> AMD (rx51) {amdDuration === -1 ? '' : `${amdDuration / 1000}s`}
+        <StyledConnectionStatus
+          style={{
+            backgroundColor: amdDuration === -1 ? 'red' : 'green'
+          }}
+        ></StyledConnectionStatus>{' '}
+        AMD (rx51) {amdDuration === -1 ? '' : `${amdDuration / 1000}s`}
       </StyledConnectionStatusWrapper>
       <StyledConnectionStatusWrapper>
-        <StyledConnectionStatus style={{
-          backgroundColor: amdDuration2 === -1 ? 'red' : 'green'
-        }}></StyledConnectionStatus> AMD (rx52) {amdDuration2 === -1 ? '' : `${amdDuration2 / 1000}s`}
+        <StyledConnectionStatus
+          style={{
+            backgroundColor: amdDuration2 === -1 ? 'red' : 'green'
+          }}
+        ></StyledConnectionStatus>{' '}
+        AMD (rx52) {amdDuration2 === -1 ? '' : `${amdDuration2 / 1000}s`}
       </StyledConnectionStatusWrapper>
       {nvidiaResult && nvidiaResult.cuda_version === '10.2' && (
         <Fragment>
@@ -333,10 +353,7 @@ export const Dashboard: React.FC = () => {
                 </a>
               </li>
               <li>
-                <Button
-                  primary={editMode}
-                  onClick={() => setEditMode((prev) => !prev)}
-                >
+                <Button primary={editMode} onClick={() => setEditMode((prev) => !prev)}>
                   {editMode ? 'edit' : 'readonly'}
                 </Button>
                 <Button onClick={() => doImport()}>Import</Button>
@@ -373,12 +390,7 @@ export const Dashboard: React.FC = () => {
                   <Panel key={gpuIndex}>
                     <h2 className={'panel-title'}>GPU: {gpuEl}</h2>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                      {printAll(
-                        amdResult.data[gpuEl],
-                        editMode,
-                        'amd',
-                        gpuIndex
-                      )}
+                      {printAll(amdResult.data[gpuEl], editMode, 'amd', gpuIndex)}
                     </div>
                   </Panel>
                 ))}
@@ -393,12 +405,7 @@ export const Dashboard: React.FC = () => {
                   <Panel key={gpuIndex}>
                     <h2 className={'panel-title'}>GPU: {gpuEl}</h2>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                      {printAll(
-                        amdResult2.data[gpuEl],
-                        editMode,
-                        'amd',
-                        gpuIndex
-                      )}
+                      {printAll(amdResult2.data[gpuEl], editMode, 'amd', gpuIndex)}
                     </div>
                   </Panel>
                 ))}

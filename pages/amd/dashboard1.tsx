@@ -42,6 +42,7 @@ const StyledBody = styled.article`
 const StyledConnectionStatusWrapper = styled.div`
   position: fixed;
   display: flex;
+  align-items: center;
   bottom: 15px;
   right: 15px;
   color: #fff;
@@ -103,22 +104,28 @@ const amdApi = axios.create({
   timeout: 5000
 });
 
-amdApi.interceptors.request.use((config) => {
-  config.params = { startTime: new Date() }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+amdApi.interceptors.request.use(
+  (config) => {
+    config.params = { startTime: new Date() };
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-amdApi.interceptors.response.use((response) => {
-  response.config.params.endTime = new Date()
-  response.config.params.duration = response.config.params.endTime - response.config.params.startTime
-  return response;
-}, (error) => {
-  error.config.params.endTime = new Date();
-  error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
-  return Promise.reject(error);
-});
+amdApi.interceptors.response.use(
+  (response) => {
+    response.config.params.endTime = new Date();
+    response.config.params.duration = response.config.params.endTime - response.config.params.startTime;
+    return response;
+  },
+  (error) => {
+    error.config.params.endTime = new Date();
+    error.config.params.duration = error.config.params.endTime - error.config.params.startTime;
+    return Promise.reject(error);
+  }
+);
 
 export const Dashboard: React.FC = () => {
   const { dashboardInfo } = reducerDashboardInfo();
@@ -146,7 +153,7 @@ export const Dashboard: React.FC = () => {
         })
         .catch((error) => {
           if (unmount) return;
-          setDuration(-1)
+          setDuration(-1);
           console.log('error', error);
         });
     };
@@ -161,38 +168,31 @@ export const Dashboard: React.FC = () => {
     };
   }, []);
 
-  const printAll = (
-    jsonObject: any,
-    edit: boolean,
-    refreshValue: number,
-    depth: number = 0
-  ) => {
+  const printAll = (jsonObject: any, edit: boolean, refreshValue: number, depth: number = 0) => {
     return Object.keys(jsonObject).map((key: string, index: number) => (
       <Fragment key={`${index}-${refreshValue}-${depth}-${edit}`}>
-        {typeof jsonObject[key] === 'string' &&
-          (editMode || !dashboardInfo.get['amd'].ignore.includes(key)) && (
-            <DashboardItem
-              title={key}
-              value={jsonObject[key]}
-              depth={depth}
-              gpu={'amd'}
-              edit={edit}
-              refreshValue={refreshValue}
-            ></DashboardItem>
-          )}
-        {typeof jsonObject[key] === 'object' &&
-          (editMode || !dashboardInfo.get['amd'].ignore.includes(key)) && (
-            <DashboardItem
-              title={key}
-              value={jsonObject[key]}
-              depth={depth}
-              gpu={'amd'}
-              edit={edit}
-              refreshValue={refreshValue}
-            >
-              {printAll(jsonObject[key], edit, depth + 1)}
-            </DashboardItem>
-          )}
+        {typeof jsonObject[key] === 'string' && (editMode || !dashboardInfo.get['amd'].ignore.includes(key)) && (
+          <DashboardItem
+            title={key}
+            value={jsonObject[key]}
+            depth={depth}
+            gpu={'amd'}
+            edit={edit}
+            refreshValue={refreshValue}
+          ></DashboardItem>
+        )}
+        {typeof jsonObject[key] === 'object' && (editMode || !dashboardInfo.get['amd'].ignore.includes(key)) && (
+          <DashboardItem
+            title={key}
+            value={jsonObject[key]}
+            depth={depth}
+            gpu={'amd'}
+            edit={edit}
+            refreshValue={refreshValue}
+          >
+            {printAll(jsonObject[key], edit, depth + 1)}
+          </DashboardItem>
+        )}
       </Fragment>
     ));
   };
@@ -245,9 +245,12 @@ export const Dashboard: React.FC = () => {
   return (
     <Wrapper>
       <StyledConnectionStatusWrapper>
-        <StyledConnectionStatus style={{
-          backgroundColor: duration === -1 ? 'red' : 'green'
-        }}></StyledConnectionStatus> {duration === -1 ? '' : `${duration / 1000}s`}
+        <StyledConnectionStatus
+          style={{
+            backgroundColor: duration === -1 ? 'red' : 'green'
+          }}
+        ></StyledConnectionStatus>{' '}
+        {duration === -1 ? '' : `${duration / 1000}s`}
       </StyledConnectionStatusWrapper>
       {result && result.data && (
         <Fragment>
@@ -277,10 +280,7 @@ export const Dashboard: React.FC = () => {
                 </StyledPageButton>
               </li>
               <li>
-                <Button
-                  primary={editMode}
-                  onClick={() => setEditMode((prev) => !prev)}
-                >
+                <Button primary={editMode} onClick={() => setEditMode((prev) => !prev)}>
                   {editMode ? 'edit' : 'readonly'}
                 </Button>
                 <Button onClick={() => doImport()}>Import</Button>
@@ -300,11 +300,7 @@ export const Dashboard: React.FC = () => {
                 <Panel>
                   <h2 className={'panel-title'}>{selectedGpu}</h2>
                   <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                    {printAll(
-                      result.data[selectedGpu],
-                      editMode,
-                      amdGpuList.indexOf(selectedGpu)
-                    )}
+                    {printAll(result.data[selectedGpu], editMode, amdGpuList.indexOf(selectedGpu))}
                   </div>
                 </Panel>
               )}
