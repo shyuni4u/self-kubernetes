@@ -213,14 +213,15 @@ export const DashboardItem: React.FC<DashboardItemProps> = ({
           symbol: 'circle',
           symbolSize: 5,
           areaStyle: {
+            opacity: 0.2,
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
               {
                 offset: 0,
                 color: '#8ec6ad'
               },
               {
-                offset: 1,
-                color: '#ffe'
+                offset: 0.7,
+                color: '#211510'
               }
             ])
           }

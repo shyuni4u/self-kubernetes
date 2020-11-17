@@ -33,10 +33,6 @@ const GlobalStyle = createGlobalStyle`
     background-color: #000;
     color: #fff;
   }
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
   input, button {
     background-color: transparent;
     border: none;
@@ -56,6 +52,10 @@ const GlobalStyle = createGlobalStyle`
   h4 { font-size: 1em; margin-top: 14px; }
   h5 { font-size: .83em; margin-top: 14px; }
   h6 { font-size: .67em; margin-top: 14px; }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 `;
 
 export default GlobalStyle;
