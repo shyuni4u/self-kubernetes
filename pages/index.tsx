@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import Button from '../components/atoms/Button';
+
 import { Todo, TodoProps } from '../components/organisms/Todo';
 import Wrapper from '../components/organisms/Wrapper';
+import ClusterChart from '../components/organisms/ClusterChart';
+import ClusterHex from '../components/organisms/ClusterHex';
+
+export enum ClusterMode {
+  none = '',
+  hex = 'hex',
+  chart = 'chart'
+}
 
 export const Index: React.FC = () => {
   const { t } = useTranslation();
+  const [moreh, setMoreh] = useState<boolean>(false);
+  const [mode, setMode] = useState<string>(ClusterMode.chart);
 
   const kubernetes: TodoProps = {
     title: 'Kubernetes',
@@ -78,17 +91,52 @@ export const Index: React.FC = () => {
   return (
     <Wrapper>
       {/* <button type={'button'} onClick={changelanguageToKo}>
-          한국어
-        </button>
-        <button type={'button'} onClick={changelanguageToEn}>
-          English
-        </button> */}
-      <h1 style={{ marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>Admin Page</h1>
-      <Todo {...etc} />
-      <Todo {...doc} />
-      <Todo {...nvidia} />
-      <Todo {...amd} />
-      <Todo {...kubernetes} />
+        한국어
+      </button>
+      <button type={'button'} onClick={changelanguageToEn}>
+        English
+      </button> */}
+      <h1 style={{ margin: '10px 0', textAlign: 'center', fontWeight: 600 }}>Admin Page</h1>
+      <nav>
+        <Button primary={moreh} onClick={() => setMoreh((prev) => !prev)}>
+          {moreh ? 'Moreh > User' : 'User > Moreh'}
+        </Button>
+        {!moreh && (
+          <>
+            <Button
+              style={{
+                backgroundColor: mode === ClusterMode.hex ? '#b06601' : '',
+                color: mode === ClusterMode.hex ? '#ffd36b' : ''
+              }}
+              onClick={() => setMode(ClusterMode.hex)}
+            >
+              hex
+            </Button>
+            <Button
+              style={{
+                backgroundColor: mode === ClusterMode.chart ? '#b06601' : '',
+                color: mode === ClusterMode.chart ? '#ffd36b' : ''
+              }}
+              onClick={() => setMode(ClusterMode.chart)}
+            >
+              chart
+            </Button>
+          </>
+        )}
+      </nav>
+
+      {!moreh && mode === ClusterMode.chart && <ClusterChart />}
+      {!moreh && mode === ClusterMode.hex && <ClusterHex />}
+
+      {moreh && (
+        <>
+          <Todo {...etc} />
+          <Todo {...doc} />
+          <Todo {...nvidia} />
+          <Todo {...amd} />
+          <Todo {...kubernetes} />
+        </>
+      )}
     </Wrapper>
   );
 };

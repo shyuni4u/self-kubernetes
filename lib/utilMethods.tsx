@@ -71,12 +71,11 @@ export const Util = {
   }
 };
 
-type ChartOption = {
-  ratio?: string;
-  addNumberingName?: string;
-  chartType?: string;
-};
-
+// type ChartOption = {
+//   ratio?: string;
+//   addNumberingName?: string;
+//   chartType?: string;
+// };
 // export const Chart = {
 //   /**
 //    * @param chartSource source of used echart.

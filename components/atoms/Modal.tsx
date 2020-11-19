@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactElement, CSSProperties } from 'react';
+import React, { useEffect, CSSProperties } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 export type ModalProps = {
@@ -11,18 +11,15 @@ export type ModalProps = {
    */
   show?: boolean;
   /**
-   * Trigger button or a
+   * Close function
    */
-  trigger: ReactElement;
+  onClose: () => void;
 };
 
 type ModalShowProps = {
   show: boolean;
 };
 
-const StyledTrigger = styled.div`
-  display: unset;
-`;
 const StyledModalBackground = styled.div<ModalShowProps>`
   display: ${(prop) => (prop.show ? 'inherit' : 'none')};
   position: fixed;
@@ -57,7 +54,7 @@ const StyledModal = styled.div<ModalShowProps>`
   border-radius: 5px;
   background-color: ${({ theme }) => theme.colors.background};
   overflow: auto;
-  animation: ${modalFade} 0.8s both;
+  animation: ${modalFade} 0.8s;
 `;
 const StyledModalContent = styled.div`
   position: relative;
@@ -77,14 +74,19 @@ const StyledModalClose = styled.button.attrs({
   font-size: 1.8rem;
   line-height: 1.8rem;
   color: ${({ theme }) => theme.colors.white};
-  border: 1px solid #fff;
+  cursor: pointer;
+  & > span {
+    opacity: 0.7;
+    &:hover {
+      opacity: 1;
+    }
+    transition: 0.2s;
+  }
 `;
 
-export const Modal: React.FC<ModalProps> = ({ style = {}, show = false, trigger = <></>, ...props }) => {
-  const [showModal, setShowModal] = useState<boolean>(show);
-
+export const Modal: React.FC<ModalProps> = ({ style = {}, show = false, onClose = () => undefined, ...props }) => {
   useEffect(() => {
-    if (showModal) {
+    if (show) {
       const body = document.body;
       body.style.height = '100vh';
       body.style.overflowY = 'hidden';
@@ -95,15 +97,16 @@ export const Modal: React.FC<ModalProps> = ({ style = {}, show = false, trigger 
       body.style.height = '';
       body.style.overflowY = '';
     }
-  }, [showModal]);
+  }, [show]);
 
   return (
     <>
-      <StyledTrigger onClick={() => setShowModal((prev) => !prev)}>{trigger}</StyledTrigger>
-      <StyledModalBackground show={showModal} onClick={() => setShowModal(false)}></StyledModalBackground>
-      <StyledModal show={showModal} style={style} {...props}>
+      <StyledModalBackground show={show} onClick={() => onClose()}></StyledModalBackground>
+      <StyledModal show={show} style={style} {...props}>
         <StyledModalContent>
-          <StyledModalClose onClick={() => setShowModal(false)}>&times;</StyledModalClose>
+          <StyledModalClose onClick={() => onClose()}>
+            <span>&times;</span>
+          </StyledModalClose>
           {props.children}
         </StyledModalContent>
       </StyledModal>

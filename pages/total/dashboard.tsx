@@ -180,8 +180,8 @@ export const Dashboard: React.FC = () => {
 
   useEffect(() => {
     let unmount = false;
-    const onLoadApi = async () => {
-      await nvidiaApi
+    const onLoadApi = () => {
+      nvidiaApi
         .get('/api')
         .then((response) => {
           if (unmount) return;
@@ -198,7 +198,7 @@ export const Dashboard: React.FC = () => {
           setNvidiaDuration(-1);
           console.log('error', error);
         });
-      await amdApi
+      amdApi
         .get('/api')
         .then((response) => {
           if (unmount) return;
@@ -216,7 +216,7 @@ export const Dashboard: React.FC = () => {
           setAmdDuration(-1);
           console.log('error', error);
         });
-      await amdApi2
+      amdApi2
         .get('/api')
         .then((response) => {
           if (unmount) return;
@@ -328,7 +328,8 @@ export const Dashboard: React.FC = () => {
             backgroundColor: nvidiaDuration === -1 ? 'red' : 'green'
           }}
         ></StyledConnectionStatus>{' '}
-        NVIDIA (p100) {nvidiaDuration === -1 ? '' : `${nvidiaDuration / 1000}s`} ({nvidiaLatency === -1 ? '' : `${nvidiaLatency / 1000}s`})
+        NVIDIA (p100) {nvidiaDuration === -1 ? '' : `${nvidiaDuration / 1000}s`} (
+        {nvidiaLatency === -1 ? '' : `${nvidiaLatency / 1000}s`})
       </StyledConnectionStatusWrapper>
       <StyledConnectionStatusWrapper style={{ bottom: '33px' }}>
         <StyledConnectionStatus
@@ -336,7 +337,8 @@ export const Dashboard: React.FC = () => {
             backgroundColor: amdDuration === -1 ? 'red' : 'green'
           }}
         ></StyledConnectionStatus>{' '}
-        AMD (rx51) {amdDuration === -1 ? '' : `${amdDuration / 1000}s`} ({amdLatency === -1 ? '' : `${amdLatency / 1000}s`})
+        AMD (rx51) {amdDuration === -1 ? '' : `${amdDuration / 1000}s`} (
+        {amdLatency === -1 ? '' : `${amdLatency / 1000}s`})
       </StyledConnectionStatusWrapper>
       <StyledConnectionStatusWrapper>
         <StyledConnectionStatus
@@ -344,7 +346,8 @@ export const Dashboard: React.FC = () => {
             backgroundColor: amdDuration2 === -1 ? 'red' : 'green'
           }}
         ></StyledConnectionStatus>{' '}
-        AMD (rx52) {amdDuration2 === -1 ? '' : `${amdDuration2 / 1000}s`} ({amdLatency2 === -1 ? '' : `${amdLatency2 / 1000}s`})
+        AMD (rx52) {amdDuration2 === -1 ? '' : `${amdDuration2 / 1000}s`} (
+        {amdLatency2 === -1 ? '' : `${amdLatency2 / 1000}s`})
       </StyledConnectionStatusWrapper>
       {nvidiaResult && nvidiaResult.cuda_version === '10.2' && (
         <Fragment>

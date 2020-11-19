@@ -1,35 +1,37 @@
 const express = require('express');
 const shell = require('shelljs');
-// const xml2json = require('xml2json');
+const xml2json = require('xml2json');
 
 const app = express();
 const port = 35100;
 
 app.get('/test', (req, res) => {
-  res.send('network speed test');
+  res.send('network test');
 });
 
-app.get('/api', (req, res) => {
+app.get('/amd/api', (req, res) => {
   const startTime = new Date();
   shell.exec('rocm-smi -a --json', (code, stdout, stderr) => {
     const rs = {
       commandDelay: new Date() - startTime,
-      smiResult: JSON.parse(stdout)
+      smiResult: JSON.parse(stdout),
+      error: stderr || 'ok'
     }
     res.send(rs);
   });
 });
 
-// app.get('/api', (req, res) => {
-//   const startTime = new Date();
-//   shell.exec('nvidia-smi -x -q', (code, stdout, stderr) => {
-//     const rs = {
-//       commandDelay: new Date() - startTime,
-//       smiResult: JSON.parse(xml2json.toJson(stdout))
-//     }
-//     res.send(rs);
-//   });
-// });
+app.get('/nvidia/api', (req, res) => {
+  const startTime = new Date();
+  shell.exec('nvidia-smi -x -q', (code, stdout, stderr) => {
+    const rs = {
+      commandDelay: new Date() - startTime,
+      smiResult: JSON.parse(xml2json.toJson(stdout)),
+      error: stderr || 'ok'
+    }
+    res.send(rs);
+  });
+});
 
 app.listen(port, () => {
   console.log(`app listening on port ${port}`);
@@ -37,7 +39,7 @@ app.listen(port, () => {
 
 
 //  npm init
-//  npm install express shelljs
+//  npm install express shelljs xml2json
 //  npm install -g forever
 //  forever start gpu_api.js
 //  forever stopall
