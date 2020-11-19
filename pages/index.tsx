@@ -50,16 +50,25 @@ export const Index: React.FC = () => {
     title: 'DASHBOARD',
     items: [
       {
-        name: 'README',
-        link: 'total/readme'
-      },
-      {
         name: 'manual',
         link: 'total/manual'
       },
       {
         name: 'p100 + rx51 + rx52',
         link: 'total/dashboard'
+      }
+    ]
+  };
+  const doc: TodoProps = {
+    title: 'Document',
+    items: [
+      {
+        name: 'README',
+        link: 'doc/readme'
+      },
+      {
+        name: 'dev test',
+        link: 'doc/test'
       }
     ]
   };
@@ -75,10 +84,11 @@ export const Index: React.FC = () => {
           English
         </button> */}
       <h1 style={{ marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>Admin Page</h1>
-      <Todo {...kubernetes} />
+      <Todo {...etc} />
+      <Todo {...doc} />
       <Todo {...nvidia} />
       <Todo {...amd} />
-      <Todo {...etc} />
+      <Todo {...kubernetes} />
     </Wrapper>
   );
 };

@@ -81,9 +81,6 @@ const StyledPanelContent = styled.div`
   z-index: 0;
 `;
 
-/**
- * Primary UI component for user interaction
- */
 export const Panel: React.FC<PanelProps> = ({ style = {}, ...props }) => {
   return (
     <StyledPanel style={style} {...props}>

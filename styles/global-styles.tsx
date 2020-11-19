@@ -46,12 +46,12 @@ const GlobalStyle = createGlobalStyle`
     width: 100%;
     height: 100%;
   }
-  h1 { font-size: 2em; margin-top: 14px; }
-  h2 { font-size: 1.5em; margin-top: 14px; }
-  h3 { font-size: 1.17em; margin-top: 14px; }
-  h4 { font-size: 1em; margin-top: 14px; }
-  h5 { font-size: .83em; margin-top: 14px; }
-  h6 { font-size: .67em; margin-top: 14px; }
+  h1 { font-size: 2em; }
+  h2 { font-size: 1.5em; }
+  h3 { font-size: 1.17em; }
+  h4 { font-size: 1em; }
+  h5 { font-size: .83em; }
+  h6 { font-size: .67em; }
   a {
     color: inherit;
     text-decoration: none;
