@@ -56,6 +56,23 @@ const GlobalStyle = createGlobalStyle`
     color: inherit;
     text-decoration: none;
   }
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+   /* Track */
+  ::-webkit-scrollbar-track {
+    background-color: #aaa;
+    border-radius : 3px;
+  }
+
+   /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 3px;
+  }
 `;
 
 export default GlobalStyle;

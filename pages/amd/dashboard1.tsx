@@ -141,7 +141,7 @@ export const Dashboard: React.FC = () => {
     let unmount = false;
     const onLoadApi = async () => {
       await amdApi
-        .get('/api')
+        .get('/amd/api')
         .then((response) => {
           if (unmount) return;
           setDuration(response.config.params.duration);

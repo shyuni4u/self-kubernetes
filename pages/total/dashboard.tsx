@@ -182,7 +182,7 @@ export const Dashboard: React.FC = () => {
     let unmount = false;
     const onLoadApi = () => {
       nvidiaApi
-        .get('/api')
+        .get('/nvidia/api')
         .then((response) => {
           if (unmount) return;
           setNvidiaDuration(response.config.params.duration);
@@ -199,7 +199,7 @@ export const Dashboard: React.FC = () => {
           console.log('error', error);
         });
       amdApi
-        .get('/api')
+        .get('/amd/api')
         .then((response) => {
           if (unmount) return;
           setAmdDuration(response.config.params.duration);
@@ -217,7 +217,7 @@ export const Dashboard: React.FC = () => {
           console.log('error', error);
         });
       amdApi2
-        .get('/api')
+        .get('/amd/api')
         .then((response) => {
           if (unmount) return;
           setAmdDuration2(response.config.params.duration);

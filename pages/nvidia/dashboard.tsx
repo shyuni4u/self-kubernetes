@@ -140,7 +140,7 @@ export const Dashboard: React.FC = () => {
     let unmount = false;
     const onLoadApi = async () => {
       await nvidiaApi
-        .get('/api')
+        .get('/nvidia/api')
         .then((response) => {
           if (unmount) return;
           setDuration(response.config.params.duration);

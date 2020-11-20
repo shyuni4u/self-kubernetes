@@ -70,9 +70,6 @@ const StyledChartWrapper = styled.div`
 
 const CHART_X_SIZE = 100;
 
-/**
- * Primary UI component for user interaction
- */
 export const DashboardItem: React.FC<DashboardItemProps> = ({
   style = {},
   title = '',

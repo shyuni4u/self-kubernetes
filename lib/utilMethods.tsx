@@ -3,6 +3,34 @@
 // import xml from 'xmlserializer'
 
 export const Util = {
+  colors: [
+    '#9d96f5',
+    '#e7bcf3',
+    '#e690d1',
+    '#fb7293',
+    '#ff9f7f',
+    '#ffdb5c',
+    '#9fe6b8',
+    '#67e0e3',
+    '#37a2da',
+    '#4424A7',
+    '#8378ea',
+
+    '#37A2DA',
+    '#32C5E9',
+    '#67E0E3',
+    '#9FE6B8',
+    '#FFDB5C',
+    '#FF9F7F',
+    '#FB7293',
+    '#E062AE',
+    '#E690D1',
+    '#E7BCF3',
+    '#9D96F5',
+    '#8378EA',
+    '#96BFFF'
+  ],
+
   getYYYYMMDD: (): string => {
     const pad2 = (n: number) => {
       return n < 10 ? '0' + n : n;
