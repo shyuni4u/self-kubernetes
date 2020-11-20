@@ -3,7 +3,13 @@ const shell = require('shelljs');
 const xml2json = require('xml2json');
 
 const app = express();
-const port = 35100;
+let port = 35100;
+
+process.argv.forEach((val, index) => {
+  if (index === 2 && Number(val) === parseInt(val, 10)) {
+    port = val;
+  }
+});
 
 app.get('/test', (req, res) => {
   res.send('network test');
