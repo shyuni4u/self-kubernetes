@@ -24,7 +24,7 @@ export const ClusterChart: React.FC = () => {
     <>
       {clusterInfo.clusters.map((cluster, clusterIndex) => (
         <StyledClusterWrapper key={clusterIndex}>
-          <h3>ClusterChart {cluster.name}</h3>
+          <h3>Cluster: {cluster.name}</h3>
           <hr />
           <StyledClusterItemWrapper>
             {cluster.nodes.map((node, nodeIndex) => (

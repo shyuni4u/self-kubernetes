@@ -125,6 +125,22 @@ const settingAxios = (ip: string): AxiosInstance => {
   return conn;
 };
 
+const findTreeInNvidia = (jsonObject: any, search: string) => {
+  const token = '>';
+  if (search.indexOf(token) < 0) {
+    return jsonObject[search];
+  } else {
+    const target = search.substr(0, search.indexOf(token));
+    const param = search.substr(search.indexOf(token) + token.length);
+    if (typeof jsonObject[target] === 'object') {
+      return findTreeInNvidia(jsonObject[target], param);
+    } else if (typeof jsonObject[target] === 'string') {
+      return jsonObject[target];
+    }
+  }
+  return undefined;
+};
+
 export const ClusterChartItem: React.FC<ClusterChartItemProps> = ({ name, type, ip }) => {
   const conn = settingAxios(ip);
   const [duration, setDuration] = useState<number>(-1);
@@ -135,6 +151,7 @@ export const ClusterChartItem: React.FC<ClusterChartItemProps> = ({ name, type, 
   const [chartData, setChartData] = useState<chartProps[]>([]);
 
   const envAMD = Setting.amd;
+  const envNVIDIA = Setting.nvidia;
 
   useEffect(() => {
     let unmount = false;
@@ -186,6 +203,7 @@ export const ClusterChartItem: React.FC<ClusterChartItemProps> = ({ name, type, 
     };
   }, []);
 
+  // for AMD
   useEffect(() => {
     if (type === 'amd' && amdGpuList.length > 0) {
       if (result) {
@@ -209,37 +227,106 @@ export const ClusterChartItem: React.FC<ClusterChartItemProps> = ({ name, type, 
   }, [amdGpuList]);
 
   useEffect(() => {
-    if (type === 'amd' && amdGpuList.length > 0 && chartData.length > 0) {
-      const data = result.data.smiResult;
+    if (result) {
+      if (type === 'amd' && amdGpuList.length > 0 && chartData.length > 0) {
+        const data = result.data.smiResult;
 
-      const tempArray = chartData;
-      const tempValue: chartProps = {
-        x: Util.getMMSS(),
-        value: envAMD.chartItem.map(() => amdGpuList.map(() => '0'))
-      };
-      amdGpuList.forEach((device, deviceIndex) => {
-        if (device === 'system') return;
+        const tempArray = chartData;
+        const tempValue: chartProps = {
+          x: Util.getMMSS(),
+          value: envAMD.chartItem.map(() => amdGpuList.map(() => '0'))
+        };
+        amdGpuList.forEach((device, deviceIndex) => {
+          if (device === 'system') return;
 
-        envAMD.chartItem.forEach((el, idx) => {
-          if (data[device][el] === undefined) {
-          } else {
-            tempValue.value[idx][deviceIndex] = data[device][el];
-          }
+          envAMD.chartItem.forEach((el, idx) => {
+            if (data[device][el] === undefined) {
+            } else {
+              tempValue.value[idx][deviceIndex] = data[device][el];
+            }
+          });
         });
-      });
-      if (tempArray.length >= CHART_X_SIZE) tempArray.shift();
-      tempArray.push(tempValue);
-      setChartData(tempArray);
+        if (tempArray.length >= CHART_X_SIZE) tempArray.shift();
+        tempArray.push(tempValue);
+        setChartData(tempArray);
+      }
+      if (type === 'nvidia') {
+        const data = result.gpu;
+
+        if (chartData.length === 0) {
+          const tempArray: chartProps[] = [];
+          for (let n = 0; n < CHART_X_SIZE; n++) {
+            tempArray.push({
+              x: '',
+              value: envNVIDIA.chartItem.map(() => data.map(() => '0'))
+            });
+          }
+          tempArray[CHART_X_SIZE - 1] = {
+            x: Util.getMMSS(),
+            value: envNVIDIA.chartItem.map((itemTree) => {
+              return data.map((_, deviceIndex) => {
+                return findTreeInNvidia(data[deviceIndex], itemTree);
+              });
+            })
+          };
+          setChartData([...tempArray]);
+        } else {
+          const tempArray = chartData;
+          const tempValue: chartProps = {
+            x: Util.getMMSS(),
+            value: envNVIDIA.chartItem.map((itemTree) => {
+              return data.map((_, deviceIndex) => {
+                return findTreeInNvidia(data[deviceIndex], itemTree);
+              });
+            })
+          };
+          if (tempArray.length >= CHART_X_SIZE) tempArray.shift();
+          tempArray.push(tempValue);
+          setChartData(tempArray);
+        }
+      }
     }
   }, [result]);
 
   const getOption = (data: chartProps[], envType: string, envTypeIndex: number) => {
-    const parseValue = amdGpuList
-      .filter((device) => type === 'amd' && device !== 'system')
-      .map((_, deviceIndex) => {
+    let parseValue = [];
+    if (type === 'amd') {
+      parseValue = amdGpuList
+        .filter((device) => device !== 'system')
+        .map((_, deviceIndex) => {
+          const color = Util.colors[deviceIndex % Util.colors.length];
+          return {
+            name: gpuNameList[deviceIndex],
+            data: data.map((item) => parseInt(item.value[envTypeIndex][deviceIndex], 10)),
+            type: 'line',
+            showSymbol: false,
+            hoverAnimation: false,
+            itemStyle: {
+              color: color
+            },
+            symbol: 'circle',
+            symbolSize: 5,
+            areaStyle: {
+              opacity: 0.2,
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: color
+                },
+                {
+                  offset: 1,
+                  color: '#211510'
+                }
+              ])
+            }
+          };
+        });
+    }
+    if (type === 'nvidia') {
+      parseValue = result.gpu.map((device, deviceIndex) => {
         const color = Util.colors[deviceIndex % Util.colors.length];
         return {
-          name: gpuNameList[deviceIndex],
+          name: device[envNVIDIA.deviceName],
           data: data.map((item) => parseInt(item.value[envTypeIndex][deviceIndex], 10)),
           type: 'line',
           showSymbol: false,
@@ -264,6 +351,7 @@ export const ClusterChartItem: React.FC<ClusterChartItemProps> = ({ name, type, 
           }
         };
       });
+    }
     return {
       title: {
         text: `${envType}`,
@@ -284,20 +372,13 @@ export const ClusterChartItem: React.FC<ClusterChartItemProps> = ({ name, type, 
           animation: false
         }
       },
-      // legend: {
-      //   top: 'bottom',
-      //   data: gpuNameList,
-      //   textStyle: {
-      //     color: '#ccc'
-      //   }
-      // },
       xAxis: {
         type: 'category',
         splitLine: {
           show: false
         },
         axisLabel: {
-          color: '#fff',
+          color: '#aaa',
           fontFamily: 'SpoqaHanSans-Regular'
         },
         axisLine: {
@@ -313,6 +394,10 @@ export const ClusterChartItem: React.FC<ClusterChartItemProps> = ({ name, type, 
         boundaryGap: false,
         splitLine: {
           show: false
+        },
+        axisLabel: {
+          color: '#ddd',
+          fontFamily: 'SpoqaHanSans-Regular'
         }
         // min: 'dataMin',
         // max: 'dataMax'
@@ -329,7 +414,24 @@ export const ClusterChartItem: React.FC<ClusterChartItemProps> = ({ name, type, 
           {name}
         </StyledItemTitle>
         <StyledItemLegendList>
-          {gpuNameList.length > 0 &&
+          {type === 'nvidia' &&
+            result.gpu.length > 0 &&
+            result.gpu.map((device, deviceIndex) => (
+              <li key={deviceIndex}>
+                <div
+                  style={{
+                    backgroundColor: Util.colors[deviceIndex % Util.colors.length],
+                    width: '10px',
+                    height: '10px',
+                    borderRadius: '2px',
+                    margin: '4px'
+                  }}
+                ></div>
+                {device[envNVIDIA.deviceName]}
+              </li>
+            ))}
+          {type === 'amd' &&
+            gpuNameList.length > 0 &&
             gpuNameList.map((gpuName, gpuNameIndex) => (
               <li key={gpuNameIndex}>
                 <div
@@ -346,6 +448,19 @@ export const ClusterChartItem: React.FC<ClusterChartItemProps> = ({ name, type, 
             ))}
         </StyledItemLegendList>
         <StyledItemChartWrapper>
+          {type === 'nvidia' &&
+            chartData.length > 0 &&
+            envNVIDIA.chartItem.map((envType, envTypeIndex) => (
+              <Fragment key={`${name}-${type}-${envTypeIndex}`}>
+                <ReactEcharts
+                  option={getOption(chartData, envType, envTypeIndex)}
+                  notMerge={true}
+                  lazyUpdate={true}
+                  style={{ height: '180px', width: '200px' }}
+                  // opts={{ renderer: 'svg' }}
+                />
+              </Fragment>
+            ))}
           {type === 'amd' &&
             result &&
             result.data &&
