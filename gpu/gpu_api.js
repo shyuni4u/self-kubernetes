@@ -27,6 +27,18 @@ app.get('/amd/api', (req, res) => {
   });
 });
 
+app.get('/amd/api/min', (req, res) => {
+  const startTime = new Date();
+  shell.exec('rocm-smi --showproductname --showuse --showmemuse --showtemp --json', (code, stdout, stderr) => {
+    const rs = {
+      commandDelay: new Date() - startTime,
+      smiResult: JSON.parse(stdout),
+      error: stderr || 'ok'
+    }
+    res.send(rs);
+  });
+});
+
 app.get('/nvidia/api', (req, res) => {
   const startTime = new Date();
   shell.exec('nvidia-smi -x -q', (code, stdout, stderr) => {

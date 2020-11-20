@@ -156,8 +156,9 @@ export const ClusterChartItem: React.FC<ClusterChartItemProps> = ({ name, type, 
   useEffect(() => {
     let unmount = false;
     const onLoadApi = () => {
+      const url = type === 'amd' ? `/${type}/api/min` : `/${type}/api`;
       conn
-        .get(`/${type}/api`)
+        .get(url)
         .then((response) => {
           if (unmount) return;
 
