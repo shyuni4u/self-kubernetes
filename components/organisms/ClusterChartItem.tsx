@@ -415,6 +415,7 @@ export const ClusterChartItem: React.FC<ClusterChartItemProps> = ({ name, type, 
         </StyledItemTitle>
         <StyledItemLegendList>
           {type === 'nvidia' &&
+            result.gpu &&
             result.gpu.length > 0 &&
             result.gpu.map((device, deviceIndex) => (
               <li key={deviceIndex}>
