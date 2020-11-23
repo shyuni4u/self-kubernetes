@@ -9,7 +9,7 @@ import Setting from '../../lib/setting.json';
 
 const StyledItemWrapper = styled.div`
   position: relative;
-  flex: 0 0 auto;
+  flex: 0 0 400px;
   border: 1px solid #fff;
   margin: 5px;
   padding-top: 100px;
@@ -96,7 +96,7 @@ export type ClusterChartItemProps = {
 const settingAxios = (ip: string): AxiosInstance => {
   const conn = axios.create({
     baseURL: ip,
-    timeout: 5000
+    timeout: 10 * 1000
   });
 
   conn.interceptors.request.use(

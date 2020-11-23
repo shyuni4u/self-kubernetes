@@ -17,7 +17,7 @@ export enum ClusterMode {
 export const Index: React.FC = () => {
   const { t } = useTranslation();
   const [moreh, setMoreh] = useState<boolean>(false);
-  const [mode, setMode] = useState<string>(ClusterMode.chart);
+  const [mode, setMode] = useState<string>(ClusterMode.hex);
 
   const kubernetes: TodoProps = {
     title: 'Kubernetes',

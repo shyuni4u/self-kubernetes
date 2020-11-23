@@ -1,8 +1,10 @@
 const express = require('express');
+const cors = require('cors');
 const shell = require('shelljs');
 const xml2json = require('xml2json');
 
 const app = express();
+app.use(cors());
 let port = 35100;
 
 process.argv.forEach((val, index) => {
@@ -57,7 +59,7 @@ app.listen(port, () => {
 
 
 //  npm init
-//  npm install express shelljs xml2json
+//  npm install express shelljs xml2json cors
 //  npm install -g forever
 //  forever start gpu_api.js
 //  forever stopall

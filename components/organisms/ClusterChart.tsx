@@ -28,12 +28,9 @@ export const ClusterChart: React.FC = () => {
           <hr />
           <StyledClusterItemWrapper>
             {cluster.nodes.map((node, nodeIndex) => (
-              <Item
-                key={`${clusterIndex}-${nodeIndex}-${node.name}-${node.type}-${node.ip}`}
-                name={node.name}
-                type={node.type}
-                ip={node.ip}
-              />
+              <Fragment key={`${clusterIndex}-${nodeIndex}-${node.name}-${node.type}-${node.ip}`}>
+                <Item name={node.name} type={node.type} ip={node.ip} />
+              </Fragment>
             ))}
           </StyledClusterItemWrapper>
         </StyledClusterWrapper>
