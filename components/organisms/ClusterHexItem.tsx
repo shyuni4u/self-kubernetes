@@ -62,9 +62,6 @@ const StyledHoverContent = styled.div<HexStatus>`
   height: ${hoverSize.height}px;
   top: 10px;
   left: 10px;
-  padding: 10px;
-  border: 1px solid red;
-  background-color: blue;
   overflow: auto;
   z-index: 1;
   ${(props) => {
@@ -89,6 +86,14 @@ const StyledHoverContent = styled.div<HexStatus>`
       `;
     }
   }}
+`;
+const StyledHoverContentBodyWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  border: 2px solid ${({ theme }) => theme.colors.hover};
+  border-radius: 10px;
+  background-color: ${({ theme }) => theme.colors.border};
 `;
 
 export type ClusterHexItemProps = {
@@ -170,7 +175,6 @@ export const ClusterHexItem: React.FC<ClusterHexItemProps> = ({ name, type, ip, 
   const [result, setResult] = useState<any>(undefined);
   const [latency, setLatency] = useState<number>(-1);
   const [amdGpuList, setAmdGpuList] = useState<string[]>([]);
-  const [gpuNameList, setGpuNameList] = useState<string[]>([]);
   const [hover, setHover] = useState<boolean | mouseXY>(false);
   const [values, setValues] = useState<valueProps[]>([]);
   const test = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
@@ -228,19 +232,6 @@ export const ClusterHexItem: React.FC<ClusterHexItemProps> = ({ name, type, ip, 
       clearInterval(interval);
     };
   }, []);
-
-  // for AMD
-  useEffect(() => {
-    if (type === 'amd' && amdGpuList.length > 0) {
-      if (result) {
-        setGpuNameList(
-          amdGpuList
-            .filter((device) => device !== 'system')
-            .map((device) => result.data.smiResult[device][envAMD.deviceName])
-        );
-      }
-    }
-  }, [amdGpuList]);
 
   useEffect(() => {
     if (result) {
@@ -306,14 +297,22 @@ export const ClusterHexItem: React.FC<ClusterHexItemProps> = ({ name, type, ip, 
         <StyledValueStatus value={getParseValue() * 0.01} />
         <StyledConnectionStatus connect={duration !== -1}></StyledConnectionStatus>
         <StyledHoverContent hover={hover}>
-          <div>{name}</div>
-          <div>{range}</div>
-          {duration === -1 ? '' : `${duration / 1000}s`} ({latency === -1 ? '' : `${latency / 1000}s`})<br />
-          {values.map((el) => (
+          <StyledHoverContentBodyWrapper>
             <div>
-              {el.name} : {el.value}
+              <span style={{ fontWeight: 600 }}>Name</span>: {name}
             </div>
-          ))}
+            <div>
+              <span style={{ fontWeight: 600 }}>Network</span>: {duration === -1 ? '' : `${duration / 1000}s`}
+            </div>
+            <div>
+              <span style={{ fontWeight: 600 }}>Command</span>: {latency === -1 ? '' : `${latency / 1000}s`}
+            </div>
+            {values.map((el) => (
+              <div>
+                <span style={{ fontWeight: 600 }}>{el.name}</span> : {el.value}
+              </div>
+            ))}
+          </StyledHoverContentBodyWrapper>
         </StyledHoverContent>
       </StyledItemWrapper>
       {/* ))} */}
