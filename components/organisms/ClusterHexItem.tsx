@@ -307,8 +307,8 @@ export const ClusterHexItem: React.FC<ClusterHexItemProps> = ({ name, type, ip, 
             <div>
               <span style={{ fontWeight: 600 }}>Command</span>: {latency === -1 ? '' : `${latency / 1000}s`}
             </div>
-            {values.map((el) => (
-              <div>
+            {values.map((el, elIndex) => (
+              <div key={elIndex}>
                 <span style={{ fontWeight: 600 }}>{el.name}</span> : {el.value}
               </div>
             ))}
