@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import axios, { AxiosInstance } from 'axios';
 import styled, { css } from 'styled-components';
 
 import Setting from '../../lib/setting.json';
 
 const hoverSize = {
-  width: 500,
+  width: 400,
   height: 200
 };
 type mouseXY = {
@@ -62,7 +62,6 @@ const StyledHoverContent = styled.div<HexStatus>`
   height: ${hoverSize.height}px;
   top: 10px;
   left: 10px;
-  overflow: auto;
   z-index: 1;
   ${(props) => {
     if (props.hover && props.hover['x'] && props.hover['x'] + hoverSize.width > window.innerWidth) {
@@ -87,13 +86,31 @@ const StyledHoverContent = styled.div<HexStatus>`
     }
   }}
 `;
-const StyledHoverContentBodyWrapper = styled.div`
-  width: 100%;
-  height: 100%;
+const StyledHoverContentBodyWrapper = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: bottom;
+  width: ${hoverSize.width}px;
+  height: ${hoverSize.height}px;
+  overflow: auto;
   padding: 10px;
   border: 2px solid ${({ theme }) => theme.colors.hover};
   border-radius: 10px;
   background-color: ${({ theme }) => theme.colors.border};
+  & > li {
+    border-bottom: 1px solid #eee;
+  }
+  & > li.subject {
+    flex: 0 0 70%;
+    font-weight: 600;
+    text-align: right;
+    padding-right: 10px;
+  }
+  & > li.value {
+    flex: 0 0 30%;
+    text-align: right;
+    border-left: 1px solid #eee;
+  }
 `;
 
 export type ClusterHexItemProps = {
@@ -298,19 +315,17 @@ export const ClusterHexItem: React.FC<ClusterHexItemProps> = ({ name, type, ip, 
         <StyledConnectionStatus connect={duration !== -1}></StyledConnectionStatus>
         <StyledHoverContent hover={hover}>
           <StyledHoverContentBodyWrapper>
-            <div>
-              <span style={{ fontWeight: 600 }}>Name</span>: {name}
-            </div>
-            <div>
-              <span style={{ fontWeight: 600 }}>Network</span>: {duration === -1 ? '' : `${duration / 1000}s`}
-            </div>
-            <div>
-              <span style={{ fontWeight: 600 }}>Command</span>: {latency === -1 ? '' : `${latency / 1000}s`}
-            </div>
+            <li className={'subject'}>Name</li>
+            <li className={'value'}>{name}</li>
+            <li className={'subject'}>Network</li>
+            <li className={'value'}>{duration === -1 ? '' : `${duration / 1000}s`}</li>
+            <li className={'subject'}>Command</li>
+            <li className={'value'}>{latency === -1 ? '' : `${latency / 1000}s`}</li>
             {values.map((el, elIndex) => (
-              <div key={elIndex}>
-                <span style={{ fontWeight: 600 }}>{el.name}</span> : {el.value}
-              </div>
+              <Fragment key={elIndex}>
+                <li className={'subject'}>{el.name}</li>
+                <li className={'value'}>{el.value}</li>
+              </Fragment>
             ))}
           </StyledHoverContentBodyWrapper>
         </StyledHoverContent>
