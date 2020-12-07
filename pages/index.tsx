@@ -7,17 +7,19 @@ import { Todo, TodoProps } from '../components/organisms/Todo';
 import Wrapper from '../components/organisms/Wrapper';
 import ClusterChart from '../components/organisms/ClusterChart';
 import ClusterHex from '../components/organisms/ClusterHex';
+import ClusterModnn from '../components/organisms/ClusterModnn';
 
 export enum ClusterMode {
   none = '',
   hex = 'hex',
-  chart = 'chart'
+  chart = 'chart',
+  modnn = 'modnn'
 }
 
 export const Index: React.FC = () => {
   const { t } = useTranslation();
   const [moreh, setMoreh] = useState<boolean>(false);
-  const [mode, setMode] = useState<string>(ClusterMode.hex);
+  const [mode, setMode] = useState<string>(ClusterMode.modnn);
 
   const kubernetes: TodoProps = {
     title: 'Kubernetes',
@@ -105,6 +107,15 @@ export const Index: React.FC = () => {
           <>
             <Button
               style={{
+                backgroundColor: mode === ClusterMode.modnn ? '#b06601' : '',
+                color: mode === ClusterMode.modnn ? '#ffd36b' : ''
+              }}
+              onClick={() => setMode(ClusterMode.modnn)}
+            >
+              modnn
+            </Button>
+            {/* <Button
+              style={{
                 backgroundColor: mode === ClusterMode.hex ? '#b06601' : '',
                 color: mode === ClusterMode.hex ? '#ffd36b' : ''
               }}
@@ -120,13 +131,14 @@ export const Index: React.FC = () => {
               onClick={() => setMode(ClusterMode.chart)}
             >
               chart
-            </Button>
+            </Button> */}
           </>
         )}
       </nav>
 
-      {!moreh && mode === ClusterMode.chart && <ClusterChart />}
-      {!moreh && mode === ClusterMode.hex && <ClusterHex />}
+      {/* {!moreh && mode === ClusterMode.chart && <ClusterChart />}
+      {!moreh && mode === ClusterMode.hex && <ClusterHex />} */}
+      {!moreh && mode === ClusterMode.modnn && <ClusterModnn />}
 
       {moreh && (
         <>
