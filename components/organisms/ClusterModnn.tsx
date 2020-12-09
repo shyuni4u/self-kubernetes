@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-// import styled from 'styled-components';
 
 import Panel from '../atoms/Panel';
 
@@ -12,7 +11,7 @@ const conn = axios.create({
 });
 
 export const ClusterModnn: React.FC = () => {
-  const [result, setResult] = useState<any>(undefined);
+  const [modnnResult, setModnnResult] = useState<any>(undefined);
 
   useEffect(() => {
     let unmount = false;
@@ -22,9 +21,9 @@ export const ClusterModnn: React.FC = () => {
         .then((response) => {
           if (unmount) return;
           if (response.status === 200) {
-            setResult(response.data);
+            setModnnResult(response.data);
           } else {
-            setResult(undefined);
+            setModnnResult(undefined);
           }
         })
         .catch((error) => {
@@ -56,8 +55,8 @@ export const ClusterModnn: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {result &&
-            result.map((row, rowIdx) => (
+          {modnnResult &&
+            modnnResult.map((row: any, rowIdx: number) => (
               <tr key={rowIdx}>
                 {cols.map((col, colIdx) => (
                   <td key={`${rowIdx}-${colIdx}`}>{row[col]}</td>

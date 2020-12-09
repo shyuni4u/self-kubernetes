@@ -8,6 +8,7 @@ import Wrapper from '../components/organisms/Wrapper';
 import ClusterChart from '../components/organisms/ClusterChart';
 import ClusterHex from '../components/organisms/ClusterHex';
 import ClusterModnn from '../components/organisms/ClusterModnn';
+import ClusterNode from '../components/organisms/ClusterNode';
 
 export enum ClusterMode {
   none = '',
@@ -138,7 +139,12 @@ export const Index: React.FC = () => {
 
       {/* {!moreh && mode === ClusterMode.chart && <ClusterChart />}
       {!moreh && mode === ClusterMode.hex && <ClusterHex />} */}
-      {!moreh && mode === ClusterMode.modnn && <ClusterModnn />}
+      {!moreh && mode === ClusterMode.modnn && (
+        <>
+          <ClusterModnn />
+          <ClusterNode />
+        </>
+      )}
 
       {moreh && (
         <>

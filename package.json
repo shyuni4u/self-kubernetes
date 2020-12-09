@@ -19,6 +19,7 @@
     "echarts": "^4.9.0",
     "echarts-for-react": "^2.0.16",
     "i18next": "^19.8.2",
+    "moment": "^2.29.1",
     "next": "^9.5.5",
     "next-i18next": "^6.0.3",
     "next-redux-wrapper": "^6.0.2",
