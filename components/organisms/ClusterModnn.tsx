@@ -22,7 +22,6 @@ export const ClusterModnn: React.FC = () => {
         .then((response) => {
           if (unmount) return;
           if (response.status === 200) {
-            console.log(response.data);
             setResult(response.data);
           } else {
             setResult(undefined);
@@ -51,17 +50,17 @@ export const ClusterModnn: React.FC = () => {
       <table style={{ width: '100%' }}>
         <thead>
           <tr>
-            {cols.map((el) => (
-              <th>{el}</th>
+            {cols.map((el, elIdx) => (
+              <th key={elIdx}>{el}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {result &&
-            result.map((row) => (
-              <tr>
-                {cols.map((col) => (
-                  <td>{row[col]}</td>
+            result.map((row, rowIdx) => (
+              <tr key={rowIdx}>
+                {cols.map((col, colIdx) => (
+                  <td key={`${rowIdx}-${colIdx}`}>{row[col]}</td>
                 ))}
               </tr>
             ))}
