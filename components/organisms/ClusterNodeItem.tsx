@@ -161,8 +161,6 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
         },
         series: Object.keys(chartData.cards).map((device, deviceIndex) => {
           const color = Util.colors[deviceIndex % Util.colors.length];
-          chartData.cards[device];
-
           return {
             name: chartData.cards[device].label,
             data: chartData.cards[device][param],

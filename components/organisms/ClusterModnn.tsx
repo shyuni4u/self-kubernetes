@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-import Panel from '../atoms/Panel';
+import ClusterModnnItem from './ClusterModnnItem';
 
 import ModnnConfig from '../../lib/setting.json';
 
@@ -12,6 +12,7 @@ const conn = axios.create({
 
 export const ClusterModnn: React.FC = () => {
   const [modnnResult, setModnnResult] = useState<any>(undefined);
+  const [nodeNameList, setNodeNameList] = useState<any[]>([]);
 
   useEffect(() => {
     let unmount = false;
@@ -42,30 +43,33 @@ export const ClusterModnn: React.FC = () => {
     };
   }, []);
 
-  const cols = ['dtInputTime', 'sNodeId', 'sType', 'sGroup', 'sDataname', 'nDataValue'];
+  useEffect(() => {
+    if (modnnResult) {
+      const tempNameList = [];
+      modnnResult.forEach((signalInfo: any) => {
+        if (!tempNameList.some((el) => el.node === signalInfo.sNodeId && el.type === signalInfo.sType)) {
+          tempNameList.push({
+            node: signalInfo.sNodeId,
+            type: signalInfo.sType
+          });
+        }
+      });
+      setNodeNameList(tempNameList);
+    }
+  }, [modnnResult]);
 
   return (
-    <Panel>
-      <table style={{ width: '100%' }}>
-        <thead>
-          <tr>
-            {cols.map((el, elIdx) => (
-              <th key={elIdx}>{el}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {modnnResult &&
-            modnnResult.map((row: any, rowIdx: number) => (
-              <tr key={rowIdx}>
-                {cols.map((col, colIdx) => (
-                  <td key={`${rowIdx}-${colIdx}`}>{row[col]}</td>
-                ))}
-              </tr>
-            ))}
-        </tbody>
-      </table>
-    </Panel>
+    <>
+      {nodeNameList.length > 0 &&
+        nodeNameList.map((node, nodeIdx) => (
+          <ClusterModnnItem
+            key={nodeIdx}
+            node={node.node}
+            type={node.type}
+            info={modnnResult.filter((el) => el.sNodeId === node.node && el.sType === node.type)}
+          />
+        ))}
+    </>
   );
 };
 
