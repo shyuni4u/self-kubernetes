@@ -214,7 +214,7 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
           top: 35,
           left: 30,
           right: 10,
-          bottom: 30
+          bottom: 70
         },
         tooltip: {
           trigger: 'axis',
@@ -252,6 +252,14 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
           // min: 'dataMin',
           // max: 'dataMax'
         },
+        dataZoom: [
+          {
+            start: 80
+          },
+          {
+            type: 'inside'
+          }
+        ],
         legend: {
           data: imgsecNames,
           textStyle: { color: '#fff' }
@@ -298,7 +306,7 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
           top: 35,
           left: 30,
           right: 10,
-          bottom: 30
+          bottom: 70
         },
         tooltip: {
           trigger: 'axis',
@@ -336,6 +344,14 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
           // min: 'dataMin',
           // max: 'dataMax'
         },
+        dataZoom: [
+          {
+            start: 80
+          },
+          {
+            type: 'inside'
+          }
+        ],
         legend: {
           data: tflopsNames,
           textStyle: { color: '#fff' }
