@@ -224,7 +224,6 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
         },
         xAxis: {
           type: 'category',
-          inverse: true,
           splitLine: {
             show: false
           },
@@ -309,7 +308,6 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
         },
         xAxis: {
           type: 'category',
-          inverse: true,
           splitLine: {
             show: false
           },
