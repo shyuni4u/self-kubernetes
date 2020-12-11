@@ -12,7 +12,7 @@ const StyledItemWrapper = styled.div`
   position: relative;
   flex: 0 0 100%;
   margin: 5px;
-  padding-top: 100px;
+  padding-top: 30px;
 `;
 const StyledItemTitle = styled.div`
   position: absolute;
