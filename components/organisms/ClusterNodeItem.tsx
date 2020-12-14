@@ -199,7 +199,7 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
             <span className={'upper'}>[{type === '0001' ? 'AMD' : type === '0002' ? 'NVIDIA' : type}]</span>
             {node}
           </StyledItemTitle>
-          <StyledItemLegendList>
+          {/* <StyledItemLegendList>
             {chartData &&
               legends.map((gpuName, gpuNameIndex) => (
                 <li key={gpuNameIndex}>
@@ -215,37 +215,111 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
                   {gpuName}
                 </li>
               ))}
-          </StyledItemLegendList>
-          <StyledItemChartWrapper>
+          </StyledItemLegendList> */}
+          <table style={{ width: '100%', border: '1px solid #999' }}>
+            <colgroup>
+              <col width={'*'}></col>
+              <col width={'15%'}></col>
+              <col width={'15%'}></col>
+              <col width={'15%'}></col>
+              <col width={'15%'}></col>
+            </colgroup>
+            <thead style={{ border: '1px solid #999' }}>
+              <tr>
+                <th>Device</th>
+                <th>Temperature GPU (C)</th>
+                <th>Temperature Memory (C)</th>
+                <th>Utilization GPU (%)</th>
+                <th>Utilization Memory (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {chartData &&
+                Object.keys(chartData.cards).map((device, deviceIndex) => (
+                  <tr key={deviceIndex}>
+                    <td>{chartData.cards[device].label}</td>
+                    <td
+                      style={{
+                        color:
+                          chartData.cards[device]['temp_gpu'][0] < 30
+                            ? '#d4edda'
+                            : chartData.cards[device]['temp_gpu'][0] < 60
+                            ? 'yellow'
+                            : 'red'
+                      }}
+                    >
+                      {chartData.cards[device]['temp_gpu'][0]}
+                    </td>
+                    <td
+                      style={{
+                        color:
+                          chartData.cards[device]['temp_mem'][0] < 30
+                            ? '#d4edda'
+                            : chartData.cards[device]['temp_mem'][0] < 60
+                            ? 'yellow'
+                            : 'red'
+                      }}
+                    >
+                      {chartData.cards[device]['temp_mem'][0]}
+                    </td>
+                    <td
+                      style={{
+                        color:
+                          chartData.cards[device]['util_gpu'][0] < 30
+                            ? '#d4edda'
+                            : chartData.cards[device]['util_gpu'][0] < 60
+                            ? 'yellow'
+                            : 'red'
+                      }}
+                    >
+                      {chartData.cards[device]['util_gpu'][0]}
+                    </td>
+                    <td
+                      style={{
+                        color:
+                          chartData.cards[device]['util_mem'][0] < 30
+                            ? '#d4edda'
+                            : chartData.cards[device]['util_mem'][0] < 60
+                            ? 'yellow'
+                            : 'red'
+                      }}
+                    >
+                      {chartData.cards[device]['util_mem'][0]}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+          {/* <StyledItemChartWrapper>
             {chartData && (
               <>
                 <ReactEcharts
                   option={getOption('temp_gpu', 'Temperature GPU (C)')}
                   notMerge={true}
                   lazyUpdate={true}
-                  style={{ height: '300px', width: '400px' }}
+                  style={{ height: '150px', width: '200px' }}
                 />
                 <ReactEcharts
                   option={getOption('temp_mem', 'Temperature Memory (C)')}
                   notMerge={true}
                   lazyUpdate={true}
-                  style={{ height: '300px', width: '400px' }}
+                  style={{ height: '150px', width: '200px' }}
                 />
                 <ReactEcharts
                   option={getOption('util_gpu', 'Utilization GPU (%)')}
                   notMerge={true}
                   lazyUpdate={true}
-                  style={{ height: '300px', width: '400px' }}
+                  style={{ height: '150px', width: '200px' }}
                 />
                 <ReactEcharts
                   option={getOption('util_mem', 'Utilization Memory (%)')}
                   notMerge={true}
                   lazyUpdate={true}
-                  style={{ height: '300px', width: '400px' }}
+                  style={{ height: '150px', width: '200px' }}
                 />
               </>
             )}
-          </StyledItemChartWrapper>
+          </StyledItemChartWrapper> */}
         </StyledItemWrapper>
       </Panel>
     );
