@@ -2,7 +2,7 @@ import React, { useEffect, useState, Fragment } from 'react';
 import styled from 'styled-components';
 import ReactEcharts from 'echarts-for-react';
 import echarts from 'echarts';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import Panel from '../atoms/Panel';
 
@@ -244,7 +244,7 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
           axisTick: {
             show: false
           },
-          data: imgsecChart.map((el) => moment(el.time).format('hh:mm:ss'))
+          data: imgsecChart.map((el) => moment(el.time).tz('Asia/Seoul').format('HH:mm:ss'))
         },
         yAxis: {
           type: 'value',
@@ -338,7 +338,7 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
           axisTick: {
             show: false
           },
-          data: tflopsChart.map((el) => moment(el.time).format('hh:mm:ss'))
+          data: tflopsChart.map((el) => moment(el.time).tz('Asia/Seoul').format('HH:mm:ss'))
         },
         yAxis: {
           type: 'value',
@@ -369,7 +369,6 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
         series: tflopsNames.map((device, deviceIndex) => {
           const color = Util.colors[deviceIndex % Util.colors.length];
           const tempDeviceName = device === '10.10.16.70' ? '5700XT' : 'V100';
-          console.log(device);
           return {
             name: tempDeviceName,
             data: tflopsChart.map((el) => el.values[device]),
