@@ -60,7 +60,8 @@ export const ClusterModnn: React.FC = () => {
 
   return (
     <>
-      {nodeNameList.length > 0 &&
+      <ClusterModnnItem info={modnnResult} />
+      {/* {nodeNameList.length > 0 &&
         nodeNameList.map((node, nodeIdx) => (
           <ClusterModnnItem
             key={nodeIdx}
@@ -68,7 +69,7 @@ export const ClusterModnn: React.FC = () => {
             type={node.type}
             info={modnnResult.filter((el) => el.sNodeId === node.node && el.sType === node.type)}
           />
-        ))}
+        ))} */}
     </>
   );
 };

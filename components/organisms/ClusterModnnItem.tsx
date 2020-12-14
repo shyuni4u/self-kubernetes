@@ -69,11 +69,11 @@ export type ClusterModnnItemProps = {
   /**
    *
    */
-  node: string;
+  node?: string;
   /**
    *
    */
-  type: string;
+  type?: string;
   /**
    * Datas for chart
    */
@@ -107,9 +107,12 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
         if (!timeList.some((el) => el === info.dtInputTime)) {
           timeList.push(info.dtInputTime);
         }
-        if (!nameList.some((el) => el === info.sGroup)) {
-          nameList.push(info.sGroup);
+        if (!nameList.some((el) => el === info.sNodeId)) {
+          nameList.push(info.sNodeId);
         }
+        // if (!nameList.some((el) => el === info.sGroup)) {
+        //   nameList.push(info.sGroup);
+        // }
       });
       setImgsecNames(nameList);
 
@@ -128,7 +131,8 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
       imgsec.forEach((info: InfoProps) => {
         dataList.forEach((el) => {
           if (info.dtInputTime === el.time) {
-            el.values[info.sGroup] = info.nDataValue;
+            // el.values[info.sGroup] = info.nDataValue;
+            el.values[info.sNodeId] = info.nDataValue;
             return false;
           }
         });
@@ -146,7 +150,6 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
       });
 
       setImgsecChart(dataList);
-      // console.log(dataList);
     }
   }, [imgsec]);
 
@@ -158,9 +161,12 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
         if (!timeList.some((el) => el === info.dtInputTime)) {
           timeList.push(info.dtInputTime);
         }
-        if (!nameList.some((el) => el === info.sGroup)) {
-          nameList.push(info.sGroup);
+        if (!nameList.some((el) => el === info.sNodeId)) {
+          nameList.push(info.sNodeId);
         }
+        // if (!nameList.some((el) => el === info.sGroup)) {
+        //   nameList.push(info.sGroup);
+        // }
       });
       setTflopsNames(nameList);
 
@@ -179,7 +185,8 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
       tflops.forEach((info: InfoProps) => {
         dataList.forEach((el) => {
           if (info.dtInputTime === el.time) {
-            el.values[info.sGroup] = info.nDataValue;
+            // el.values[info.sGroup] = info.nDataValue;
+            el.values[info.sNodeId] = info.nDataValue;
             return false;
           }
         });
@@ -261,13 +268,15 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
           }
         ],
         legend: {
-          data: imgsecNames,
+          // data: imgsecNames,
+          data: ['5700XT', 'V100'],
           textStyle: { color: '#fff' }
         },
         series: imgsecNames.map((device, deviceIndex) => {
           const color = Util.colors[deviceIndex % Util.colors.length];
+          const tempDeviceName = device === '10.10.16.70' ? '5700XT' : 'V100';
           return {
-            name: device,
+            name: tempDeviceName,
             data: imgsecChart.map((el) => el.values[device]),
             type: 'line',
             showSymbol: false,
@@ -353,13 +362,16 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
           }
         ],
         legend: {
-          data: tflopsNames,
+          // data: tflopsNames,
+          data: ['5700XT', 'V100'],
           textStyle: { color: '#fff' }
         },
         series: tflopsNames.map((device, deviceIndex) => {
           const color = Util.colors[deviceIndex % Util.colors.length];
+          const tempDeviceName = device === '10.10.16.70' ? '5700XT' : 'V100';
+          console.log(device);
           return {
-            name: device,
+            name: tempDeviceName,
             data: tflopsChart.map((el) => el.values[device]),
             type: 'line',
             showSymbol: false,
@@ -388,38 +400,38 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
     }
   };
 
-  if (info.length > 0) {
-    return (
-      <Panel>
-        <StyledItemWrapper>
-          <StyledItemTitle>
-            <span className={'upper'}>[{type === '0001' ? 'AMD' : type === '0002' ? 'NVIDIA' : type}]</span>
-            {node}
-          </StyledItemTitle>
-          <StyledItemChartWrapper>
-            {imgsecChart.length > 0 && (
-              <ReactEcharts
-                option={getOption('image/sec', 'Image/sec')}
-                notMerge={true}
-                lazyUpdate={true}
-                style={{ height: '300px', width: '400px' }}
-              />
-            )}
-            {tflopsChart.length > 0 && (
-              <ReactEcharts
-                option={getOption('tflops', 'TFLOPS')}
-                notMerge={true}
-                lazyUpdate={true}
-                style={{ height: '300px', width: '400px' }}
-              />
-            )}
-          </StyledItemChartWrapper>
-        </StyledItemWrapper>
-      </Panel>
-    );
-  } else {
-    return <span>Error. [ClusterModnnItem]</span>;
-  }
+  return (
+    <>
+      {info && (
+        <Panel>
+          <StyledItemWrapper>
+            <StyledItemTitle>
+              {type && <span className={'upper'}>[{type === '0001' ? 'AMD' : type === '0002' ? 'NVIDIA' : type}]</span>}
+              {node}
+            </StyledItemTitle>
+            <StyledItemChartWrapper>
+              {imgsecChart.length > 0 && (
+                <ReactEcharts
+                  option={getOption('image/sec', 'Image/sec')}
+                  notMerge={true}
+                  lazyUpdate={true}
+                  style={{ height: '300px', width: '400px' }}
+                />
+              )}
+              {tflopsChart.length > 0 && (
+                <ReactEcharts
+                  option={getOption('tflops', 'TFLOPS')}
+                  notMerge={true}
+                  lazyUpdate={true}
+                  style={{ height: '300px', width: '400px' }}
+                />
+              )}
+            </StyledItemChartWrapper>
+          </StyledItemWrapper>
+        </Panel>
+      )}
+    </>
+  );
 };
 
 export default ClusterModnnItem;
