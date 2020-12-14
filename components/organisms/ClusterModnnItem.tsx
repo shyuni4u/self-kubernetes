@@ -250,13 +250,17 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
               color: '#fff'
             }
           },
+          boundaryGap: false,
           data: imgsecChart.map((el) => moment(el.time).tz('Asia/Seoul').format('mm:ss'))
         },
         yAxis: {
           type: 'value',
           boundaryGap: false,
           splitLine: {
-            show: false
+            show: true,
+            lineStyle: {
+              color: '#444'
+            }
           },
           axisLabel: {
             color: '#ddd',
@@ -350,13 +354,17 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
               color: '#fff'
             }
           },
+          boundaryGap: false,
           data: tflopsChart.map((el) => moment(el.time).tz('Asia/Seoul').format('mm:ss'))
         },
         yAxis: {
           type: 'value',
           boundaryGap: false,
           splitLine: {
-            show: false
+            show: true,
+            lineStyle: {
+              color: '#444'
+            }
           },
           axisLabel: {
             color: '#ddd',
