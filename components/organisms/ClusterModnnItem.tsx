@@ -7,6 +7,7 @@ import moment from 'moment-timezone';
 import Panel from '../atoms/Panel';
 
 import Util from '../../lib/utilMethods';
+import { colors } from 'react-select/src/theme';
 
 const StyledItemWrapper = styled.div`
   position: relative;
@@ -220,7 +221,7 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
         grid: {
           top: 35,
           left: 30,
-          right: 10,
+          right: 30,
           bottom: 70
         },
         tooltip: {
@@ -269,21 +270,26 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
           // min: 'dataMin',
           // max: 'dataMax'
         },
-        dataZoom: [
-          {
-            start: 50
-          },
-          {
-            type: 'inside'
-          }
-        ],
+        // dataZoom: [
+        //   {
+        //     start: 50
+        //   },
+        //   {
+        //     type: 'inside'
+        //   }
+        // ],
         legend: {
           // data: imgsecNames,
           data: ['5700XT', 'V100'],
           textStyle: { color: '#fff' }
         },
         series: imgsecNames.map((device, deviceIndex) => {
-          const color = Util.colors[deviceIndex % Util.colors.length];
+          const color =
+            device === '10.10.16.70'
+              ? '#9d96f5'
+              : device === '10.10.16.71'
+              ? '#e7bcf3'
+              : Util.colors[deviceIndex % Util.colors.length];
           const tempDeviceName = device === '10.10.16.70' ? '5700XT' : 'V100';
           return {
             name: tempDeviceName,
@@ -293,6 +299,13 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
             hoverAnimation: false,
             itemStyle: {
               color: color
+            },
+            markPoint: {
+              symbolSize: 1,
+              label: {
+                formatter: `${imgsecChart[imgsecChart.length - 1].values[device]}`
+              },
+              data: [{ name: 'Recent', valueIndex: 0, type: 'max' }]
             },
             symbol: 'circle',
             symbolSize: 5,
@@ -324,7 +337,7 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
         grid: {
           top: 35,
           left: 30,
-          right: 10,
+          right: 30,
           bottom: 70
         },
         tooltip: {
@@ -373,21 +386,26 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
           // min: 'dataMin',
           // max: 'dataMax'
         },
-        dataZoom: [
-          {
-            start: 50
-          },
-          {
-            type: 'inside'
-          }
-        ],
+        // dataZoom: [
+        //   {
+        //     start: 50
+        //   },
+        //   {
+        //     type: 'inside'
+        //   }
+        // ],
         legend: {
           // data: tflopsNames,
           data: ['5700XT', 'V100'],
           textStyle: { color: '#fff' }
         },
         series: tflopsNames.map((device, deviceIndex) => {
-          const color = Util.colors[deviceIndex % Util.colors.length];
+          const color =
+            device === '10.10.16.70'
+              ? '#9d96f5'
+              : device === '10.10.16.71'
+              ? '#e7bcf3'
+              : Util.colors[deviceIndex % Util.colors.length];
           const tempDeviceName = device === '10.10.16.70' ? '5700XT' : 'V100';
           return {
             name: tempDeviceName,
@@ -397,6 +415,13 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
             hoverAnimation: false,
             itemStyle: {
               color: color
+            },
+            markPoint: {
+              symbolSize: 1,
+              label: {
+                formatter: `${tflopsChart[tflopsChart.length - 1].values[device]}`
+              },
+              data: [{ name: 'Recent', valueIndex: 0, type: 'max' }]
             },
             symbol: 'circle',
             symbolSize: 5,
