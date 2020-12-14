@@ -239,12 +239,18 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
             fontFamily: 'SpoqaHanSans-Regular'
           },
           axisLine: {
-            show: false
+            show: true,
+            lineStyle: {
+              color: '#fff'
+            }
           },
           axisTick: {
-            show: false
+            show: true,
+            lineStyle: {
+              color: '#fff'
+            }
           },
-          data: imgsecChart.map((el) => moment(el.time).tz('Asia/Seoul').format('HH:mm:ss'))
+          data: imgsecChart.map((el) => moment(el.time).tz('Asia/Seoul').format('mm:ss'))
         },
         yAxis: {
           type: 'value',
@@ -261,7 +267,7 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
         },
         dataZoom: [
           {
-            start: 80
+            start: 50
           },
           {
             type: 'inside'
@@ -333,12 +339,18 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
             fontFamily: 'SpoqaHanSans-Regular'
           },
           axisLine: {
-            show: false
+            show: true,
+            lineStyle: {
+              color: '#fff'
+            }
           },
           axisTick: {
-            show: false
+            show: true,
+            lineStyle: {
+              color: '#fff'
+            }
           },
-          data: tflopsChart.map((el) => moment(el.time).tz('Asia/Seoul').format('HH:mm:ss'))
+          data: tflopsChart.map((el) => moment(el.time).tz('Asia/Seoul').format('mm:ss'))
         },
         yAxis: {
           type: 'value',
@@ -355,7 +367,7 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
         },
         dataZoom: [
           {
-            start: 80
+            start: 50
           },
           {
             type: 'inside'

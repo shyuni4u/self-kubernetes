@@ -12,7 +12,7 @@ const StyledItemWrapper = styled.div`
   position: relative;
   flex: 0 0 100%;
   margin: 5px;
-  padding-top: 100px;
+  padding-top: 40px;
 `;
 const StyledItemTitle = styled.div`
   position: absolute;
@@ -199,38 +199,25 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
             <span className={'upper'}>[{type === '0001' ? 'AMD' : type === '0002' ? 'NVIDIA' : type}]</span>
             {node}
           </StyledItemTitle>
-          {/* <StyledItemLegendList>
-            {chartData &&
-              legends.map((gpuName, gpuNameIndex) => (
-                <li key={gpuNameIndex}>
-                  <div
-                    style={{
-                      backgroundColor: Util.colors[gpuNameIndex % Util.colors.length],
-                      width: '10px',
-                      height: '10px',
-                      borderRadius: '2px',
-                      margin: '4px'
-                    }}
-                  ></div>
-                  {gpuName}
-                </li>
-              ))}
-          </StyledItemLegendList> */}
-          <table style={{ width: '100%', border: '1px solid #999' }}>
+          <table style={{ width: '50%', border: '1px solid #999' }}>
             <colgroup>
               <col width={'*'}></col>
-              <col width={'15%'}></col>
-              <col width={'15%'}></col>
               <col width={'15%'}></col>
               <col width={'15%'}></col>
             </colgroup>
             <thead style={{ border: '1px solid #999' }}>
               <tr>
                 <th>Device</th>
-                <th>Temperature GPU (C)</th>
-                <th>Temperature Memory (C)</th>
-                <th>Utilization GPU (%)</th>
-                <th>Utilization Memory (%)</th>
+                <th>
+                  Utilization
+                  <br />
+                  GPU (%)
+                </th>
+                <th>
+                  Utilization
+                  <br />
+                  Memory (%)
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -238,30 +225,6 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
                 Object.keys(chartData.cards).map((device, deviceIndex) => (
                   <tr key={deviceIndex}>
                     <td>{chartData.cards[device].label}</td>
-                    <td
-                      style={{
-                        color:
-                          chartData.cards[device]['temp_gpu'][0] < 30
-                            ? '#d4edda'
-                            : chartData.cards[device]['temp_gpu'][0] < 60
-                            ? 'yellow'
-                            : 'red'
-                      }}
-                    >
-                      {chartData.cards[device]['temp_gpu'][0]}
-                    </td>
-                    <td
-                      style={{
-                        color:
-                          chartData.cards[device]['temp_mem'][0] < 30
-                            ? '#d4edda'
-                            : chartData.cards[device]['temp_mem'][0] < 60
-                            ? 'yellow'
-                            : 'red'
-                      }}
-                    >
-                      {chartData.cards[device]['temp_mem'][0]}
-                    </td>
                     <td
                       style={{
                         color:
