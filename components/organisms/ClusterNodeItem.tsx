@@ -233,16 +233,16 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
           pieces: [
             {
               gt: 0,
-              lte: 30,
-              color: '#00bc8c'
+              lte: 10,
+              color: '#ffde33'
             },
             {
-              gt: 30,
-              lte: 60,
+              gt: 10,
+              lte: 80,
               color: '#f39c12'
             },
             {
-              gt: 60,
+              gt: 80,
               lte: 100,
               color: '#e74c3c'
             }
