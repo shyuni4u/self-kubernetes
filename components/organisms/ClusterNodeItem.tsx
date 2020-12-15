@@ -1,12 +1,9 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ReactEcharts from 'echarts-for-react';
-import echarts from 'echarts';
 import moment from 'moment';
 
 import Panel from '../atoms/Panel';
-
-import Util from '../../lib/utilMethods';
 
 const StyledItemWrapper = styled.div`
   position: relative;
@@ -26,23 +23,6 @@ const StyledItemTitle = styled.div`
   & > .upper {
     text-transform: uppercase;
     margin-right: 5px;
-  }
-`;
-const StyledItemLegendList = styled.ul`
-  position: absolute;
-  top: 35px;
-  left: 5px;
-  width: calc(100% - 10px);
-  max-height: 60px;
-  overflow-y: auto;
-  color: #fff;
-  font-size: 14px;
-  user-select: none;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  & > li {
-    display: flex;
-    align-items: center;
   }
 `;
 const StyledItemChartWrapper = styled.div`
@@ -77,7 +57,6 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
   const datas = info[0].datas;
 
   const [chartData, setChartData] = useState<any>(undefined);
-  const [legends, setLegends] = useState<string[]>([]);
 
   useEffect(() => {
     if (datas[0].data) {
@@ -109,8 +88,6 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
           parseData.cards[`${_card.card} (${_card.order})`]['util_mem'].push(parseInt(_card.values['util_mem'], 10));
         });
       });
-
-      setLegends(jsonArray.map((el: CardProps) => `${el.card} (${el.order})`));
       setChartData(parseData);
     }
   }, [datas]);
@@ -119,63 +96,44 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
     if (chartData) {
       const EXCEPT_RANGE = 10;
       const _title = chartData.cards[device].label;
-      // const color = Util.colors[deviceIndex % Util.colors.length];
-      // const _xTempData = chartData.time.map((el: string) => moment(el).format('mm:ss'));
-      // const _xEditData = _xTempData.filter((el: string, elIdx: number) => elIdx < _xTempData.length - EXCEPT_RANGE);
       const _tempData = chartData.cards[device][param];
-      // const _editTempData = _tempData.map((el: number, elIdx: number) => {
-      //   if (el < 0) {
-      //     let dummyCnt = 0;
-      //     let dummySum = 0;
-      //     for (let n = elIdx; n < elIdx + EXCEPT_RANGE && n < _tempData.length; n++) {
-      //       dummyCnt++;
-      //       dummySum += _tempData[n];
-      //     }
-      //     return dummyCnt === 0 ? 0 : dummySum / dummyCnt;
-      //   } else {
-      //     return el;
-      //   }
-      // });
+
       const _xData2 = [];
       const _valueData2 = [];
+      const PREV_RANGE = 70;
+
       if (type === '0001') {
-        _tempData.forEach((el: number, elIdx: number) => {
-          if (elIdx + EXCEPT_RANGE < _tempData.length) {
+        _tempData.forEach((_: number, elIdx: number) => {
+          if (elIdx > PREV_RANGE && elIdx + EXCEPT_RANGE < _tempData.length) {
             let dummyCnt = 0;
             let dummySum = 0;
             for (let n = elIdx; n < elIdx + EXCEPT_RANGE; n++) {
-              dummyCnt++;
-              dummySum += _tempData[n];
+              if (_tempData[n] !== 0) {
+                dummyCnt++;
+                dummySum += _tempData[n];
+              }
             }
             _xData2.push(moment(chartData.time[elIdx]).format('mm:ss'));
             _valueData2.push(dummyCnt === 0 ? 0 : Math.round((dummySum / dummyCnt) * 100) / 100);
           }
         });
       } else {
-        _tempData.forEach((el: number, elIdx: number) => {
-          if (elIdx + EXCEPT_RANGE < _tempData.length) {
+        const EXCEPT_RANGE2 = 5;
+        _tempData.forEach((_: number, elIdx: number) => {
+          if (elIdx > PREV_RANGE && elIdx + EXCEPT_RANGE < _tempData.length) {
+            let dummyCnt = 0;
+            let dummySum = 0;
+            for (let n = elIdx; n < elIdx + EXCEPT_RANGE2; n++) {
+              if (_tempData[n] !== 0) {
+                dummyCnt++;
+                dummySum += _tempData[n];
+              }
+            }
             _xData2.push(moment(chartData.time[elIdx]).format('mm:ss'));
-            _valueData2.push(Math.round(el * 100) / 100);
+            _valueData2.push(dummyCnt === 0 ? 0 : Math.round((dummySum / dummyCnt) * 100) / 100);
           }
         });
       }
-      // const _editData = _editTempData2.filter(
-      //   (el: string, elIdx: number) => elIdx < _editTempData2.length - EXCEPT_RANGE
-      // );
-      // const _xAvgEditData = [];
-      // const _valueAvgEditData = [];
-      // let _dummyAvgCnt = 0;
-      // let _dummyAvgSum = 0;
-      // _xEditData.forEach((el: string, elIdx: number) => {
-      //   _dummyAvgCnt++;
-      //   _dummyAvgSum += _editData[elIdx];
-      //   if (elIdx % EXCEPT_RANGE === 0) {
-      //     _xAvgEditData.push(el);
-      //     _valueAvgEditData.push(_dummyAvgCnt === 0 ? 0 : Math.round((_dummyAvgSum / _dummyAvgCnt) * 100) / 100);
-      //     _dummyAvgCnt = 0;
-      //     _dummyAvgSum = 0;
-      //   }
-      // });
       const _xData = _xData2;
       const _valueData = _valueData2;
 
@@ -278,7 +236,6 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
         <StyledItemWrapper>
           <StyledItemTitle>
             <span className={'upper'}>[{type === '0001' ? 'AMD' : type === '0002' ? 'NVIDIA' : type}]</span>
-            {node}
           </StyledItemTitle>
           <div style={{ display: 'flex' }}>
             <StyledItemChartWrapper>
@@ -294,19 +251,6 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
                   />
                 ))}
             </StyledItemChartWrapper>
-            {/* <StyledItemChartWrapper>
-              <span className={'title'}>Utilization Memory (%)</span>
-              {chartData &&
-                Object.keys(chartData.cards).map((device, deviceIndex) => (
-                  <ReactEcharts
-                    key={deviceIndex}
-                    option={getOption('util_mem', device, deviceIndex)}
-                    notMerge={true}
-                    lazyUpdate={true}
-                    style={{ height: '150px', width: '200px' }}
-                  />
-                ))}
-            </StyledItemChartWrapper> */}
           </div>
         </StyledItemWrapper>
       </Panel>
