@@ -46,9 +46,16 @@ const StyledItemLegendList = styled.ul`
   }
 `;
 const StyledItemChartWrapper = styled.div`
-  width: 100%;
+  flex: 1 1 auto;
+  position: relative;
   display: flex;
   flex-wrap: wrap;
+  padding-top: 40px;
+  .title {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+  }
 `;
 
 export type ClusterNodeItemProps = {
@@ -107,11 +114,12 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
     }
   }, [datas]);
 
-  const getOption = (param: string, label: string) => {
+  const getOption = (param: string, device: string, deviceIndex: number) => {
     if (chartData) {
+      const color = Util.colors[deviceIndex % Util.colors.length];
       return {
         title: {
-          text: `${label}`,
+          text: chartData.cards[device].label,
           textStyle: {
             color: '#ccc',
             fontSize: 11
@@ -156,38 +164,42 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
           axisLabel: {
             color: '#ddd',
             fontFamily: 'SpoqaHanSans-Regular'
-          }
-          // min: 'dataMin',
-          // max: 'dataMax'
+          },
+          min: 0,
+          max: 100
         },
-        series: Object.keys(chartData.cards).map((device, deviceIndex) => {
-          const color = Util.colors[deviceIndex % Util.colors.length];
-          return {
-            name: chartData.cards[device].label,
-            data: chartData.cards[device][param],
-            type: 'line',
-            showSymbol: false,
-            hoverAnimation: false,
-            itemStyle: {
-              color: color
+        visualMap: {
+          show: false,
+          pieces: [
+            {
+              gt: 0,
+              lte: 30,
+              color: '#d4edda'
             },
-            symbol: 'circle',
-            symbolSize: 5,
-            areaStyle: {
-              opacity: 0.2,
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                {
-                  offset: 0,
-                  color: color
-                },
-                {
-                  offset: 1,
-                  color: '#211510'
-                }
-              ])
+            {
+              gt: 30,
+              lte: 60,
+              color: '#ffde33'
+            },
+            {
+              gt: 60,
+              lte: 100,
+              color: '#cc0033'
             }
-          };
-        })
+          ],
+          outOfRange: {
+            color: '#999'
+          }
+        },
+        series: {
+          name: chartData.cards[device].label,
+          data: chartData.cards[device][param],
+          type: 'line',
+          showSymbol: false,
+          hoverAnimation: false,
+          symbol: 'circle',
+          symbolSize: 5
+        }
       };
     }
   };
@@ -200,90 +212,88 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
             <span className={'upper'}>[{type === '0001' ? 'AMD' : type === '0002' ? 'NVIDIA' : type}]</span>
             {node}
           </StyledItemTitle>
-          <table style={{ width: '50%', border: '1px solid #999' }}>
-            <colgroup>
-              <col width={'*'}></col>
-              <col width={'15%'}></col>
-              <col width={'15%'}></col>
-            </colgroup>
-            <thead style={{ border: '1px solid #999' }}>
-              <tr>
-                <th>Device</th>
-                <th>
-                  Utilization
-                  <br />
-                  GPU (%)
-                </th>
-                <th>
-                  Utilization
-                  <br />
-                  Memory (%)
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+          <div style={{ display: 'flex' }}>
+            {/* <table style={{ flex: '1 0 600px', border: '1px solid #999', marginRight: '20px' }}>
+              <colgroup>
+                <col width={'*'}></col>
+                <col width={'150px'}></col>
+                <col width={'150px'}></col>
+              </colgroup>
+              <thead style={{ border: '1px solid #999' }}>
+                <tr>
+                  <th>Device</th>
+                  <th>
+                    Utilization
+                    <br />
+                    GPU (%)
+                  </th>
+                  <th>
+                    Utilization
+                    <br />
+                    Memory (%)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {chartData &&
+                  Object.keys(chartData.cards).map((device, deviceIndex) => (
+                    <tr key={deviceIndex}>
+                      <td>{chartData.cards[device].label}</td>
+                      <td
+                        style={{
+                          color:
+                            chartData.cards[device]['util_gpu'][0] < 30
+                              ? '#d4edda'
+                              : chartData.cards[device]['util_gpu'][0] < 60
+                              ? '#ffde33'
+                              : '#cc0033'
+                        }}
+                      >
+                        {chartData.cards[device]['util_gpu'][0]}
+                      </td>
+                      <td
+                        style={{
+                          color:
+                            chartData.cards[device]['util_mem'][0] < 30
+                              ? '#d4edda'
+                              : chartData.cards[device]['util_mem'][0] < 60
+                              ? '#ffde33'
+                              : '#cc0033'
+                        }}
+                      >
+                        {chartData.cards[device]['util_mem'][0]}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table> */}
+            <StyledItemChartWrapper>
+              <span className={'title'}>Utilization GPU (%)</span>
               {chartData &&
                 Object.keys(chartData.cards).map((device, deviceIndex) => (
-                  <tr key={deviceIndex}>
-                    <td>{chartData.cards[device].label}</td>
-                    <td
-                      style={{
-                        color:
-                          chartData.cards[device]['util_gpu'][0] < 30
-                            ? '#d4edda'
-                            : chartData.cards[device]['util_gpu'][0] < 60
-                            ? 'yellow'
-                            : 'red'
-                      }}
-                    >
-                      {chartData.cards[device]['util_gpu'][0]}
-                    </td>
-                    <td
-                      style={{
-                        color:
-                          chartData.cards[device]['util_mem'][0] < 30
-                            ? '#d4edda'
-                            : chartData.cards[device]['util_mem'][0] < 60
-                            ? 'yellow'
-                            : 'red'
-                      }}
-                    >
-                      {chartData.cards[device]['util_mem'][0]}
-                    </td>
-                  </tr>
+                  <ReactEcharts
+                    key={deviceIndex}
+                    option={getOption('util_gpu', device, deviceIndex)}
+                    notMerge={true}
+                    lazyUpdate={true}
+                    style={{ height: '150px', width: '200px' }}
+                  />
                 ))}
-            </tbody>
-          </table>
-          {/* <StyledItemChartWrapper>
-            {chartData && (
-              <>
-                <ReactEcharts
-                  option={getOption('temp_gpu', 'Temperature GPU (C)')}
-                  notMerge={true}
-                  lazyUpdate={true}
-                  style={{ height: '150px', width: '200px' }}
-                />
-                <ReactEcharts
-                  option={getOption('temp_mem', 'Temperature Memory (C)')}
-                  notMerge={true}
-                  lazyUpdate={true}
-                  style={{ height: '150px', width: '200px' }}
-                />
-                <ReactEcharts
-                  option={getOption('util_gpu', 'Utilization GPU (%)')}
-                  notMerge={true}
-                  lazyUpdate={true}
-                  style={{ height: '150px', width: '200px' }}
-                />
-                <ReactEcharts
-                  option={getOption('util_mem', 'Utilization Memory (%)')}
-                  notMerge={true}
-                  lazyUpdate={true}
-                  style={{ height: '150px', width: '200px' }}
-                />
-              </>
-            )}
-          </StyledItemChartWrapper> */}
+            </StyledItemChartWrapper>
+            <StyledItemChartWrapper>
+              <span className={'title'}>Utilization Memory (%)</span>
+              {chartData &&
+                Object.keys(chartData.cards).map((device, deviceIndex) => (
+                  <ReactEcharts
+                    key={deviceIndex}
+                    option={getOption('util_mem', device, deviceIndex)}
+                    notMerge={true}
+                    lazyUpdate={true}
+                    style={{ height: '150px', width: '200px' }}
+                  />
+                ))}
+            </StyledItemChartWrapper>
+          </div>
         </StyledItemWrapper>
       </Panel>
     );
