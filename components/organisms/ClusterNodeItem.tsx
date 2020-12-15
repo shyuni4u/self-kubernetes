@@ -117,10 +117,10 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
 
   const getOption = (param: string, device: string, deviceIndex: number) => {
     if (chartData) {
-      const EXCEPT_RANGE = 60;
+      const EXCEPT_RANGE = 10;
       const _title = chartData.cards[device].label;
       // const color = Util.colors[deviceIndex % Util.colors.length];
-      const _xTempData = chartData.time.map((el: string) => moment(el).format('mm:ss'));
+      // const _xTempData = chartData.time.map((el: string) => moment(el).format('mm:ss'));
       // const _xEditData = _xTempData.filter((el: string, elIdx: number) => elIdx < _xTempData.length - EXCEPT_RANGE);
       const _tempData = chartData.cards[device][param];
       // const _editTempData = _tempData.map((el: number, elIdx: number) => {
