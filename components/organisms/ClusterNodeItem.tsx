@@ -138,19 +138,27 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
       // });
       const _xData2 = [];
       const _valueData2 = [];
-      _tempData.forEach((el: number, elIdx: number) => {
-        if (elIdx + EXCEPT_RANGE < _tempData.length) {
-          let dummyCnt = 0;
-          let dummySum = 0;
-          for (let n = elIdx; n < elIdx + EXCEPT_RANGE; n++) {
-            dummyCnt++;
-            dummySum += _tempData[n];
+      if (type === '0001') {
+        _tempData.forEach((el: number, elIdx: number) => {
+          if (elIdx + EXCEPT_RANGE < _tempData.length) {
+            let dummyCnt = 0;
+            let dummySum = 0;
+            for (let n = elIdx; n < elIdx + EXCEPT_RANGE; n++) {
+              dummyCnt++;
+              dummySum += _tempData[n];
+            }
+            _xData2.push(moment(chartData.time[elIdx]).format('mm:ss'));
+            _valueData2.push(dummyCnt === 0 ? 0 : Math.round((dummySum / dummyCnt) * 100) / 100);
           }
-          _xData2.push(moment(chartData.time[elIdx]).format('mm:ss'));
-          _valueData2.push(dummyCnt === 0 ? 0 : Math.round((dummySum / dummyCnt) * 100) / 100);
-          // return dummyCnt === 0 ? 0 : dummySum / dummyCnt;
-        }
-      });
+        });
+      } else {
+        _tempData.forEach((el: number, elIdx: number) => {
+          if (elIdx + EXCEPT_RANGE < _tempData.length) {
+            _xData2.push(moment(chartData.time[elIdx]).format('mm:ss'));
+            _valueData2.push(Math.round(el * 100) / 100);
+          }
+        });
+      }
       // const _editData = _editTempData2.filter(
       //   (el: string, elIdx: number) => elIdx < _editTempData2.length - EXCEPT_RANGE
       // );
@@ -273,60 +281,6 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
             {node}
           </StyledItemTitle>
           <div style={{ display: 'flex' }}>
-            {/* <table style={{ flex: '1 0 600px', border: '1px solid #999', marginRight: '20px' }}>
-              <colgroup>
-                <col width={'*'}></col>
-                <col width={'150px'}></col>
-                <col width={'150px'}></col>
-              </colgroup>
-              <thead style={{ border: '1px solid #999' }}>
-                <tr>
-                  <th>Device</th>
-                  <th>
-                    Utilization
-                    <br />
-                    GPU (%)
-                  </th>
-                  <th>
-                    Utilization
-                    <br />
-                    Memory (%)
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {chartData &&
-                  Object.keys(chartData.cards).map((device, deviceIndex) => (
-                    <tr key={deviceIndex}>
-                      <td>{chartData.cards[device].label}</td>
-                      <td
-                        style={{
-                          color:
-                            chartData.cards[device]['util_gpu'][0] < 30
-                              ? '#d4edda'
-                              : chartData.cards[device]['util_gpu'][0] < 60
-                              ? '#ffde33'
-                              : '#cc0033'
-                        }}
-                      >
-                        {chartData.cards[device]['util_gpu'][0]}
-                      </td>
-                      <td
-                        style={{
-                          color:
-                            chartData.cards[device]['util_mem'][0] < 30
-                              ? '#d4edda'
-                              : chartData.cards[device]['util_mem'][0] < 60
-                              ? '#ffde33'
-                              : '#cc0033'
-                        }}
-                      >
-                        {chartData.cards[device]['util_mem'][0]}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table> */}
             <StyledItemChartWrapper>
               <span className={'title'}>Utilization GPU (%)</span>
               {chartData &&
@@ -340,7 +294,7 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
                   />
                 ))}
             </StyledItemChartWrapper>
-            <StyledItemChartWrapper>
+            {/* <StyledItemChartWrapper>
               <span className={'title'}>Utilization Memory (%)</span>
               {chartData &&
                 Object.keys(chartData.cards).map((device, deviceIndex) => (
@@ -352,7 +306,7 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
                     style={{ height: '150px', width: '200px' }}
                   />
                 ))}
-            </StyledItemChartWrapper>
+            </StyledItemChartWrapper> */}
           </div>
         </StyledItemWrapper>
       </Panel>
