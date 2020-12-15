@@ -77,8 +77,9 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
       const jsonArray = JSON.parse(datas[0].data);
       const card = {};
       jsonArray.forEach((el: CardProps) => {
+        const shortName = el.card.length > 24 ? el.card.substring(0, 24) + '...' : el.card;
         card[`${el.card} (${el.order})`] = {
-          label: `${el.card} (${el.order})`,
+          label: `${shortName} (${el.order})`,
           temp_gpu: [],
           temp_mem: [],
           util_gpu: [],
