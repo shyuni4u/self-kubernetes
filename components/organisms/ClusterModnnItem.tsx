@@ -147,6 +147,10 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
           } else if (el.values[name] === EMPTY_DATA) {
             el.values[name] = elIdx === 0 ? 0 : dataList[elIdx - 1].values[name];
           }
+
+          if (elIdx === 0 && el.values[name] === 0) {
+            el.values[name] = dataList[elIdx + 1].values[name];
+          }
         });
       });
 
@@ -200,6 +204,10 @@ export const ClusterModnnItem: React.FC<ClusterModnnItemProps> = ({ node, type, 
             el.values[name] = 0;
           } else if (el.values[name] === EMPTY_DATA) {
             el.values[name] = elIdx === 0 ? 0 : dataList[elIdx - 1].values[name];
+          }
+
+          if (elIdx === 0 && el.values[name] === 0) {
+            el.values[name] = dataList[elIdx + 1].values[name];
           }
         });
       });

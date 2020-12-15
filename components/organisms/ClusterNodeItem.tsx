@@ -109,6 +109,7 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
           parseData.cards[`${_card.card} (${_card.order})`]['util_mem'].push(parseInt(_card.values['util_mem'], 10));
         });
       });
+
       setLegends(jsonArray.map((el: CardProps) => `${el.card} (${el.order})`));
       setChartData(parseData);
     }
@@ -116,7 +117,27 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
 
   const getOption = (param: string, device: string, deviceIndex: number) => {
     if (chartData) {
-      const color = Util.colors[deviceIndex % Util.colors.length];
+      const EXCEPT_RANGE = 10;
+      // const color = Util.colors[deviceIndex % Util.colors.length];
+      const _xTempData = chartData.time.map((el: string) => moment(el).format('mm:ss'));
+      const _xData = _xTempData.filter((el: string, elIdx: number) => elIdx < _xTempData.length - EXCEPT_RANGE);
+      const _tempData = chartData.cards[device][param];
+      const _editTempData = _tempData.map((el: number, elIdx: number) => {
+        if (el < 10) {
+          let dummyCnt = 0;
+          let dummySum = 0;
+          for (let n = elIdx; n < elIdx + EXCEPT_RANGE && n < _tempData.length; n++) {
+            dummyCnt++;
+            dummySum += _tempData[n];
+          }
+          return dummyCnt === 0 ? 0 : dummySum / dummyCnt;
+        } else {
+          return el;
+        }
+      });
+      const _editData = _editTempData.filter(
+        (el: string, elIdx: number) => elIdx < _editTempData.length - EXCEPT_RANGE
+      );
       return {
         title: {
           text: chartData.cards[device].label,
@@ -139,7 +160,6 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
         },
         xAxis: {
           type: 'category',
-          inverse: true,
           splitLine: {
             show: false
           },
@@ -148,12 +168,19 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
             fontFamily: 'SpoqaHanSans-Regular'
           },
           axisLine: {
-            show: false
+            show: true,
+            lineStyle: {
+              color: '#fff'
+            }
           },
           axisTick: {
-            show: false
+            show: true,
+            lineStyle: {
+              color: '#fff'
+            }
           },
-          data: chartData.time.map((el) => moment(el).format('mm:ss'))
+          boundaryGap: false,
+          data: _xData
         },
         yAxis: {
           type: 'value',
@@ -174,17 +201,17 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
             {
               gt: 0,
               lte: 30,
-              color: '#d4edda'
+              color: '#00bc8c'
             },
             {
               gt: 30,
               lte: 60,
-              color: '#ffde33'
+              color: '#f39c12'
             },
             {
               gt: 60,
               lte: 100,
-              color: '#cc0033'
+              color: '#e74c3c'
             }
           ],
           outOfRange: {
@@ -193,7 +220,7 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
         },
         series: {
           name: chartData.cards[device].label,
-          data: chartData.cards[device][param],
+          data: _editData,
           type: 'line',
           showSymbol: false,
           hoverAnimation: false,
