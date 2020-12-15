@@ -117,13 +117,14 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
 
   const getOption = (param: string, device: string, deviceIndex: number) => {
     if (chartData) {
-      const EXCEPT_RANGE = 10;
+      const EXCEPT_RANGE = 30;
+      const _title = chartData.cards[device].label;
       // const color = Util.colors[deviceIndex % Util.colors.length];
       const _xTempData = chartData.time.map((el: string) => moment(el).format('mm:ss'));
-      const _xData = _xTempData.filter((el: string, elIdx: number) => elIdx < _xTempData.length - EXCEPT_RANGE);
+      const _xEditData = _xTempData.filter((el: string, elIdx: number) => elIdx < _xTempData.length - EXCEPT_RANGE);
       const _tempData = chartData.cards[device][param];
       const _editTempData = _tempData.map((el: number, elIdx: number) => {
-        if (el < 10) {
+        if (el < 0) {
           let dummyCnt = 0;
           let dummySum = 0;
           for (let n = elIdx; n < elIdx + EXCEPT_RANGE && n < _tempData.length; n++) {
@@ -138,9 +139,27 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
       const _editData = _editTempData.filter(
         (el: string, elIdx: number) => elIdx < _editTempData.length - EXCEPT_RANGE
       );
+
+      const _xAvgEditData = [];
+      const _valueAvgEditData = [];
+      let _dummyAvgCnt = 0;
+      let _dummyAvgSum = 0;
+      _xEditData.forEach((el: string, elIdx: number) => {
+        _dummyAvgCnt++;
+        _dummyAvgSum += _editData[elIdx];
+        if (elIdx % EXCEPT_RANGE === 0) {
+          _xAvgEditData.push(el);
+          _valueAvgEditData.push(_dummyAvgCnt === 0 ? 0 : Math.round((_dummyAvgSum / _dummyAvgCnt) * 100) / 100);
+          _dummyAvgCnt = 0;
+          _dummyAvgSum = 0;
+        }
+      });
+      const _xData = _xAvgEditData;
+      const _valueData = _valueAvgEditData;
+
       return {
         title: {
-          text: chartData.cards[device].label,
+          text: _title,
           textStyle: {
             color: '#ccc',
             fontSize: 11
@@ -219,8 +238,8 @@ export const ClusterNodeItem: React.FC<ClusterNodeItemProps> = ({ info }) => {
           }
         },
         series: {
-          name: chartData.cards[device].label,
-          data: _editData,
+          name: _title,
+          data: _valueData,
           type: 'line',
           showSymbol: false,
           hoverAnimation: false,
